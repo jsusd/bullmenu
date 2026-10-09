@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BULLMARKET | Panel Administrativo del Menú</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="https://assets.olaclick.app/companies/logos/be35feb9-65e1-4d35-aff6-f2b8a2fa7fd2.png">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Barra Lateral (Sidebar) -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <img src="logo-bullmarket.png" onerror="this.src='https://assets.olaclick.app/companies/logos/be35feb9-65e1-4d35-aff6-f2b8a2fa7fd2.png'" alt="Bullmarket Logo">
+        </div>
+        <div>
+          <div class="sidebar-brand-title">BULLMARKET</div>
+          <div class="sidebar-brand-sub">Panel de Control</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-item active" data-section="products">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4"/>
+          </svg>
+          <span>Productos del Menú</span>
+        </div>
+
+        <div class="nav-item" data-section="categories">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+          </svg>
+          <span>Categorías</span>
+        </div>
+
+        <div class="nav-item" data-section="settings">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Horarios y Negocio</span>
+        </div>
+
+        <div class="nav-item" data-section="backup">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          <span>Respaldar & Exportar</span>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a href="index.html" target="_blank" class="btn-view-live">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+          </svg>
+          <span>Ver Menú de Clientes</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Área Principal -->
+    <main class="admin-main">
+      <!-- Barra Superior -->
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button type="button" id="btnMobileSidebar" class="btn-mobile-sidebar">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1 id="topbarPageTitle" class="topbar-page-title">Productos del Menú</h1>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Toggle Estado Rápido -->
+          <div id="barStatusToggle" class="bar-status-toggle" title="Clic para alternar Abierto/Cerrado rápidamente">
+            <span class="bar-status-dot"></span>
+            <span id="barStatusText">Menú: Abierto</span>
+          </div>
+
+          <!-- Botón de Exportar data.js -->
+          <button type="button" id="btnExportDataJs" class="btn-export-code" title="Descarga una copia de data.js con todos los cambios">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            <span>Descargar data.js</span>
+          </button>
+
+          <!-- Sesión y Logout de Administrador -->
+          <div class="admin-user-pill" title="Sesión activa">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span id="currentAdminName">admin</span>
+          </div>
+
+          <button type="button" id="btnLogoutAdmin" class="btn-logout-admin" title="Cerrar Sesión de Administrador">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Salir</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Cuerpo del Panel -->
+      <div class="admin-body">
+        
+        <!-- SECCIÓN 1: PRODUCTOS -->
+        <section id="section-products" class="admin-section active">
+          <!-- Tarjetas de Métricas -->
+          <div class="metrics-row">
+            <div class="metric-card">
+              <div class="metric-icon-box orange">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <h4>Total Productos</h4>
+                <div id="metricTotalProducts" class="metric-num">0</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box green">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3"/>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <h4>Disponibles</h4>
+                <div id="metricAvailableProducts" class="metric-num">0</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box red">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="15" y1="9" x2="9" y2="15"></line>
+                  <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <h4>Pausados / Agotados</h4>
+                <div id="metricPausedProducts" class="metric-num">0</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-box gold">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </div>
+              <div class="metric-info">
+                <h4>Categorías</h4>
+                <div id="metricTotalCategories" class="metric-num">0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Barra de Filtros y Acción -->
+          <div class="table-action-bar">
+            <div class="table-filters-left">
+              <input type="text" id="searchProductInput" class="table-search-input" placeholder="Buscar por nombre, categoría o ingredientes...">
+              
+              <select id="filterCategorySelect" class="table-filter-select">
+                <option value="all">Todas las categorías</option>
+              </select>
+
+              <select id="filterStatusSelect" class="table-filter-select">
+                <option value="all">Todos los estados</option>
+                <option value="available">Solo Disponibles</option>
+                <option value="paused">Solo Agotados</option>
+              </select>
+            </div>
+
+            <button type="button" id="btnNewProduct" class="btn-primary">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>+ Nuevo Producto</span>
+            </button>
+          </div>
+
+          <!-- Tabla de Datos -->
+          <div class="data-card-table">
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Foto</th>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th>Descripción</th>
+                    <th>Precio ($)</th>
+                    <th>Disponibilidad</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tableProductsBody">
+                  <!-- Renderizado con JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 2: CATEGORÍAS -->
+        <section id="section-categories" class="admin-section">
+          <div class="table-action-bar">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+              Organiza las secciones del menú de BULLMARKET (ej: Brunch, Hamburguesas, Pastas, Carnes, Postres, Cafetería).
+            </p>
+            <button type="button" id="btnNewCategory" class="btn-primary">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>+ Nueva Categoría</span>
+            </button>
+          </div>
+
+          <div class="data-card-table">
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Nombre de Categoría</th>
+                    <th>Identificador (ID)</th>
+                    <th>Insignia Destacada</th>
+                    <th>Total Productos</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="categoriesListBody">
+                  <!-- Renderizado con JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECCIÓN 3: CONFIGURACIÓN Y HORARIOS -->
+        <section id="section-settings" class="admin-section">
+          <form id="formSettings" class="settings-grid">
+            <!-- Horarios y Estado -->
+            <div class="settings-card">
+              <h3 class="settings-card-title">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span>Horarios y Estado de Apertura</span>
+              </h3>
+              <p class="settings-card-sub">Configura cuándo está disponible la toma de pedidos para los clientes.</p>
+
+              <div class="form-group-admin">
+                <label for="cfgForceStatus">Estado del Menú:</label>
+                <select id="cfgForceStatus" class="admin-select">
+                  <option value="auto">Automático (Según horario de Barquisimeto)</option>
+                  <option value="open">Forzar Siempre Abierto</option>
+                  <option value="closed">Forzar Cerrado (No aceptar pedidos temporalmente)</option>
+                </select>
+                <span class="field-hint">Si marcas "Cerrado", el menú mostrará aviso a los clientes.</span>
+              </div>
+
+              <div class="form-group-admin">
+                <label for="cfgScheduleWeekdays">Horario Lunes a Domingo:</label>
+                <input type="text" id="cfgScheduleWeekdays" class="admin-input" placeholder="Ej: Lunes a Domingo: 8:00 AM - 10:00 PM">
+              </div>
+
+              <div class="form-group-admin">
+                <label for="cfgScheduleWeekend">Horario Brunch & Fines de Semana:</label>
+                <input type="text" id="cfgScheduleWeekend" class="admin-input" placeholder="Ej: Brunch & Cenas: 8:00 AM - 11:00 PM">
+              </div>
+
+              <div class="form-group-admin">
+                <label for="cfgDeliveryTime">Tiempo Estimado de Entrega:</label>
+                <input type="text" id="cfgDeliveryTime" class="admin-input" placeholder="Ej: 10 - 15 min.">
+              </div>
+
+              <button type="submit" class="btn-primary" style="margin-top: 10px;">
+                Guardar Ajustes
+              </button>
+            </div>
+
+            <!-- Canales de Contacto y Redes -->
+            <div class="settings-card">
+              <h3 class="settings-card-title">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                <span>WhatsApp de Pedidos & Marca</span>
+              </h3>
+              <p class="settings-card-sub">Controla a dónde se enrutan los pedidos de los clientes.</p>
+
+              <div class="form-group-admin">
+                <label for="cfgWhatsapp">Número de WhatsApp receptor (código de país sin +):</label>
+                <input type="text" id="cfgWhatsapp" class="admin-input" placeholder="Ej: 584128642855">
+                <span class="field-hint">Los pedidos del carrito se enviarán automáticamente a este número.</span>
+              </div>
+
+              <div class="form-group-admin">
+                <label for="cfgName">Nombre del Negocio:</label>
+                <input type="text" id="cfgName" class="admin-input" placeholder="BULLMARKET">
+              </div>
+
+              <div class="form-group-admin">
+                <label for="cfgTagline">Eslogan / Subtítulo:</label>
+                <input type="text" id="cfgTagline" class="admin-input" placeholder="Brunch, Bistro & Gourmet Burgers">
+              </div>
+
+              <div class="form-group-admin">
+                <label for="cfgAddress">Dirección Física:</label>
+                <input type="text" id="cfgAddress" class="admin-input" placeholder="Galería Gastronómica C.C. Las Trinitarias...">
+              </div>
+
+              <div class="form-group-admin">
+                <label for="cfgInstagram">Usuario de Instagram:</label>
+                <input type="text" id="cfgInstagram" class="admin-input" placeholder="bullmarketbrunch">
+              </div>
+
+              <div class="form-group-admin">
+                <label for="cfgGoogleMaps">Enlace de Google Maps:</label>
+                <input type="text" id="cfgGoogleMaps" class="admin-input" placeholder="https://www.google.com/maps/place/...">
+              </div>
+
+              <div class="form-group-admin">
+                <label for="cfgTripAdvisor">Enlace de TripAdvisor:</label>
+                <input type="text" id="cfgTripAdvisor" class="admin-input" placeholder="https://www.tripadvisor.es/Restaurant_Review-...">
+              </div>
+            </div>
+
+            <!-- Seguridad y Clave de Administrador -->
+            <div class="settings-card">
+              <h3 class="settings-card-title">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Seguridad y Clave de Administrador</span>
+              </h3>
+              <p class="settings-card-sub">Controla el usuario y la clave requerida para modificar precios, pausar productos y editar el menú.</p>
+
+              <div class="form-group-admin">
+                <label for="cfgAdminUsername">Usuario Administrador:</label>
+                <input type="text" id="cfgAdminUsername" class="admin-input" placeholder="admin" value="admin">
+                <span class="field-hint">Usuario maestro para autenticarse en el panel de control.</span>
+              </div>
+
+              <div class="form-group-admin">
+                <label for="cfgAdminPassword">Contraseña de Administrador:</label>
+                <div class="password-input-wrap">
+                  <input type="password" id="cfgAdminPassword" class="admin-input" placeholder="bullmarket2026" value="bullmarket2026">
+                  <button type="button" id="btnToggleCfgPassword" class="btn-toggle-eye" title="Mostrar/ocultar contraseña">👁️</button>
+                </div>
+                <span class="field-hint">Clave para autorizar cambios (por defecto: bullmarket2026).</span>
+              </div>
+
+              <button type="button" id="btnSaveAdminPassword" class="btn-primary" style="margin-top: 10px;">
+                Actualizar Credenciales
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- SECCIÓN 4: RESPALDAR & EXPORTAR -->
+        <section id="section-backup" class="admin-section">
+          <div class="settings-grid">
+            <div class="settings-card">
+              <h3 class="settings-card-title">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+                <span>Descargar Archivo data.js Actualizado</span>
+              </h3>
+              <p class="settings-card-sub">
+                Todas las modificaciones que realizas en este panel se sincronizan en tu navegador en tiempo real. 
+                Para actualizar el archivo base del proyecto o publicarlo en internet, descarga el nuevo archivo de datos:
+              </p>
+              
+              <button type="button" class="btn-primary" onclick="document.getElementById('btnExportDataJs').click();">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+                <span>Descargar data.js listo para producción</span>
+              </button>
+            </div>
+
+            <div class="settings-card">
+              <h3 class="settings-card-title">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+                <span>Copia de Seguridad JSON</span>
+              </h3>
+              <p class="settings-card-sub">
+                Guarda un respaldo completo de tus productos y configuraciones en formato JSON o restáuralo cuando desees.
+              </p>
+              
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" id="btnExportJson" class="btn-secondary">
+                  <span>Exportar Copia JSON</span>
+                </button>
+                <label class="btn-secondary" style="cursor: pointer;">
+                  <span>Importar Copia JSON</span>
+                  <input type="file" id="inputImportJson" accept=".json" style="display: none;">
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h3 class="settings-card-title" style="color: #ff858d;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                  <path d="M3 3v5h5"/>
+                </svg>
+                <span>Restaurar Catálogo Oficial</span>
+              </h3>
+              <p class="settings-card-sub">
+                ¿Deseas descartar cambios locales y restaurar los 186 productos y categorías oficiales originales extraídos de OlaClick?
+              </p>
+              
+              <button type="button" id="btnResetDefaults" class="btn-secondary" style="border-color: var(--color-danger); color: #ff858d;">
+                Restablecer Todo de Fábrica
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: AGREGAR / EDITAR PRODUCTO -->
+  <div id="productModal" class="admin-modal-overlay">
+    <div class="admin-modal-box">
+      <div class="modal-head">
+        <h3 id="productModalTitle">Agregar Nuevo Producto</h3>
+        <button type="button" id="closeProductModalBtn" class="btn-modal-close" title="Cerrar">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="productForm">
+        <div class="modal-body">
+          <div class="form-group-admin">
+            <label for="prodName">Nombre del Producto / Plato *</label>
+            <input type="text" id="prodName" class="admin-input" placeholder="Ej: Bull Master Burger" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group-admin">
+              <label for="prodCategory">Categoría *</label>
+              <select id="prodCategory" class="admin-select" required>
+                <!-- Opciones dinámicas -->
+              </select>
+            </div>
+
+            <div class="form-group-admin">
+              <label for="prodPrice">Precio ($ USD) *</label>
+              <input type="number" id="prodPrice" class="admin-input" step="0.01" min="0" placeholder="Ej: 14.95" required>
+            </div>
+          </div>
+
+          <div class="form-group-admin">
+            <label for="prodBadge">Insignia / Etiqueta Promocional (Opcional):</label>
+            <input type="text" id="prodBadge" class="admin-input" placeholder="Ej: Promo, 2x1, Top Bull, Sweet Master">
+          </div>
+
+          <div class="form-group-admin">
+            <label for="prodDesc">Descripción Gastronómica / Ingredientes:</label>
+            <textarea id="prodDesc" class="admin-textarea" rows="3" placeholder="Describe los ingredientes, guarniciones, término o preparación..."></textarea>
+          </div>
+
+          <!-- Zona de Fotos del Producto (Modificar o Agregar Más) -->
+          <div class="form-group-admin product-photos-manager">
+            <div class="photos-manager-header">
+              <label class="photos-manager-title">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <span>Fotos del Producto (Modificar o Agregar Más):</span>
+              </label>
+              <span class="photos-count-badge" id="photosCountBadge">1 foto</span>
+            </div>
+
+            <!-- Botones Principales de Acción para la Foto -->
+            <div class="photo-action-buttons">
+              <!-- Botón 1: Modificar foto actual -->
+              <label class="btn-action-photo btn-change-photo" title="Selecciona una nueva foto desde tu computadora para reemplazar la actual">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span>Modificar Foto Actual</span>
+                <input type="file" id="prodFileInput" accept="image/*" style="display: none;">
+              </label>
+
+              <!-- Botón 2: Agregar otra foto adicional -->
+              <label class="btn-action-photo btn-add-another-photo" title="Subir otra imagen adicional para crear una galería en este plato">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>+ Agregar Otra Imagen</span>
+                <input type="file" id="prodAddAnotherFileInput" accept="image/*" style="display: none;">
+              </label>
+
+              <!-- Botón 3: Pegar enlace URL -->
+              <button type="button" id="btnToggleUrlInput" class="btn-action-photo btn-toggle-url" title="Pegar un enlace de internet">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+                <span>Pegar Enlace URL</span>
+              </button>
+            </div>
+
+            <!-- Fila desplegable para Pegar URL -->
+            <div id="urlInputContainer" class="url-input-container" style="display: none;">
+              <input type="url" id="prodImageUrl" class="admin-input" placeholder="Pega el enlace web (https://...) de la imagen">
+              <div class="url-actions-row">
+                <button type="button" id="btnApplyUrlReplace" class="btn-small-primary">Reemplazar Foto Actual</button>
+                <button type="button" id="btnApplyUrlAdd" class="btn-small-secondary">+ Agregar Como Nueva Foto</button>
+              </div>
+            </div>
+
+            <!-- Visor de Foto Seleccionada / Principal -->
+            <div class="main-photo-preview-wrap">
+              <div class="img-preview-box" id="mainImgPreviewBox">
+                <img id="prodPreviewImg" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80" alt="Vista previa">
+                <div class="preview-overlay-info">
+                  <span class="preview-role-badge" id="previewRoleBadge">Foto Principal ⭐</span>
+                  <button type="button" id="btnDeleteActivePhoto" class="btn-delete-active-photo" title="Eliminar esta foto" style="display: none;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    <span>Quitar</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Galería de Miniaturas de Todas las Fotos del Producto -->
+            <div class="gallery-thumbnails-section">
+              <div class="gallery-strip-header">
+                <span>Fotos añadidas al producto:</span>
+                <small>(Haz clic en una miniatura para verla, marcarla como principal o cambiarla)</small>
+              </div>
+              <div id="productGalleryThumbnails" class="gallery-thumbnails-strip">
+                <!-- Miniaturas renderizadas dinámicamente -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Disponibilidad Switch -->
+          <div class="form-group-admin" style="margin-top: 10px;">
+            <label>Disponibilidad en el Menú:</label>
+            <div class="switch-wrapper" style="margin-top: 4px;">
+              <label class="custom-switch">
+                <input type="checkbox" id="prodAvailable" checked>
+                <span class="slider"></span>
+              </label>
+              <span id="prodAvailableLabel" class="switch-label active">Disponible para ordenar</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-foot">
+          <button type="button" id="btnCancelProduct" class="btn-secondary">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar Producto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AGREGAR / EDITAR CATEGORÍA -->
+  <div id="categoryModal" class="admin-modal-overlay">
+    <div class="admin-modal-box" style="max-width: 480px;">
+      <div class="modal-head">
+        <h3 id="categoryModalTitle">Agregar Nueva Categoría</h3>
+        <button type="button" id="closeCategoryModalBtn" class="btn-modal-close" title="Cerrar">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="categoryForm">
+        <div class="modal-body">
+          <div class="form-group-admin">
+            <label for="catName">Nombre de la Categoría *</label>
+            <input type="text" id="catName" class="admin-input" placeholder="Ej: Especialidades del Chef" required>
+          </div>
+
+          <div class="form-group-admin">
+            <label for="catBadge">Insignia / Etiqueta Destacada (Opcional):</label>
+            <input type="text" id="catBadge" class="admin-input" placeholder="Ej: Nuevo, Destacado, Favoritos">
+          </div>
+        </div>
+
+        <div class="modal-foot">
+          <button type="button" id="btnCancelCategory" class="btn-secondary">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar Categoría</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TELÓN DE AUTENTICACIÓN ADMIN (AUTH GATE) -->
+  <div id="adminAuthGate" class="admin-auth-gate">
+    <div class="auth-gate-box">
+      <div class="auth-gate-header">
+        <div class="auth-gate-logo">
+          <img src="logo-bullmarket.png" onerror="this.src='https://assets.olaclick.app/companies/logos/be35feb9-65e1-4d35-aff6-f2b8a2fa7fd2.png'" alt="Bullmarket Logo">
+        </div>
+        <div>
+          <h2 class="auth-gate-title">BULLMARKET</h2>
+          <span class="auth-gate-sub">Acceso Protegido • Panel Administrativo</span>
+        </div>
+      </div>
+
+      <div class="auth-gate-notice">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>Para modificar productos, precios o configuración debes autenticarte como administrador.</span>
+      </div>
+
+      <form id="authGateForm" class="auth-gate-form">
+        <div id="gateErrorAlert" class="gate-error-alert" style="display: none;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="gateErrorText">Usuario o contraseña incorrectos.</span>
+        </div>
+
+        <div class="form-group-admin">
+          <label for="gateUsername">Usuario de Administrador *</label>
+          <input type="text" id="gateUsername" class="admin-input" placeholder="admin" required autofocus autocomplete="username">
+        </div>
+
+        <div class="form-group-admin">
+          <label for="gatePassword">Contraseña *</label>
+          <div class="password-input-wrap">
+            <input type="password" id="gatePassword" class="admin-input" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" id="btnToggleGatePassword" class="btn-toggle-eye" title="Mostrar/ocultar contraseña">👁️</button>
+          </div>
+        </div>
+
+        <div class="gate-hint-box">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>Credenciales iniciales: <strong>admin</strong> / <strong>bullmarket2026</strong></span>
+        </div>
+
+        <button type="submit" class="btn-primary auth-gate-btn">
+          <span>Desbloquear Panel</span>
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+
+        <a href="index.html" class="auth-gate-back">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Volver al Menú de Clientes</span>
+        </a>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contenedor Toast -->
+  <div id="adminToastContainer" class="admin-toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

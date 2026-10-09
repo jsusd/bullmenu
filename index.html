@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BULLMARKET | Menú Interactivo & Pedidos en Línea</title>
+  
+  <!-- Open Graph & Meta Tags para Redes y WhatsApp -->
+  <meta name="description" content="Explora el menú oficial de BULLMARKET Barquisimeto: Brunch, hamburguesas gourmet, café de especialidad, pastas, principales y postres. Pide directo a WhatsApp.">
+  <meta property="og:title" content="BULLMARKET - Brunch, Bistro & Gourmet Burgers">
+  <meta property="og:description" content="Pide en línea directo a nuestro WhatsApp (+58 412 864 2855). Brunch, burgers ganadoras de Burger Master, repostería y café.">
+  <meta property="og:image" content="https://assets.olaclick.app/companies/logos/be35feb9-65e1-4d35-aff6-f2b8a2fa7fd2.png">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/png" href="https://assets.olaclick.app/companies/logos/be35feb9-65e1-4d35-aff6-f2b8a2fa7fd2.png">
+
+  <!-- Tipografías Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos de la Plataforma -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Fondo con ambiente luminoso gastronómico -->
+  <div class="bg-noise-overlay"></div>
+
+  <!-- Barra Superior de Promociones -->
+  <div class="top-notice-bar">
+    <div class="notice-inner">
+      <span>🔥 <strong>PROMOS BULLMARKET:</strong> Prueba la <strong>Bull Master</strong> (Burger Master 2024) y el <strong>Choco Master</strong> (Sweet Master 2024) | Delivery 10-15 min</span>
+    </div>
+  </div>
+
+  <!-- Header Hero con Banner y Perfil de Marca -->
+  <header class="hero-header">
+    <div class="hero-cover">
+      <img id="brandBanner" src="https://assets.olaclick.app/companies/backgrounds/7b7865eb-5abe-45e5-ab2b-c99fcd6d30a1.webp" alt="Bullmarket Cover">
+      <div class="hero-cover-gradient"></div>
+    </div>
+    
+    <div class="hero-content">
+      <div class="brand-wrapper">
+        <div class="brand-avatar">
+          <img id="brandLogo" src="logo-bullmarket.png" onerror="this.src='https://assets.olaclick.app/companies/logos/be35feb9-65e1-4d35-aff6-f2b8a2fa7fd2.png'" alt="Bullmarket Logo">
+        </div>
+        <div class="brand-meta">
+          <h1>
+            <span id="brandName">BULLMARKET</span>
+            <span id="statusBadge" class="badge-status open">Abierto</span>
+          </h1>
+          <p id="brandTagline" class="tagline">Brunch, Bistro & Gourmet Burgers</p>
+          <a id="brandAddressLink" href="https://www.google.com/maps/place/Bull+Market+%26+Brunch/data=!4m2!3m1!1s0x0:0xa7d99ba7b0023584?sa=X&ved=1t:2428&ictx=111" target="_blank" rel="noopener noreferrer" class="location-info" title="Ver en Google Maps">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span id="brandAddress">Galería Gastronómica C.C. Las Trinitarias / Av. Herman Garmendia, Barquisimeto</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a id="instagramLink" href="https://www.instagram.com/bullmarket_bqto/" target="_blank" rel="noopener noreferrer" class="btn-social btn-instagram" title="Instagram @bullmarket_bqto">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+          <span>Instagram</span>
+        </a>
+        <a id="googleMapsLink" href="https://www.google.com/maps/place/Bull+Market+%26+Brunch/data=!4m2!3m1!1s0x0:0xa7d99ba7b0023584?sa=X&ved=1t:2428&ictx=111" target="_blank" rel="noopener noreferrer" class="btn-social btn-google" title="Ver en Google Maps">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+          <span>Google Maps</span>
+        </a>
+        <a id="tripAdvisorLink" href="https://www.tripadvisor.es/Restaurant_Review-g316090-d25275311-Reviews-Bull_Market_Brunch-Barquisimeto_Central_Western_Region.html" target="_blank" rel="noopener noreferrer" class="btn-social btn-tripadvisor" title="Ver en TripAdvisor">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="6.5" cy="13.5" r="2.5"/>
+            <circle cx="17.5" cy="13.5" r="2.5"/>
+            <path d="M12 6C8.5 6 5.5 7.7 3.5 10.3c.7.4 1.5.7 2.4.7 1.8 0 3.3-1 4.1-2.4.6.3 1.3.4 2 .4s1.4-.1 2-.4c.8 1.4 2.3 2.4 4.1 2.4.9 0 1.7-.3 2.4-.7C18.5 7.7 15.5 6 12 6zm-5.5 12c-2.5 0-4.5-2-4.5-4.5S4 9 6.5 9c2 0 3.7 1.3 4.3 3.1-.9.7-1.5 1.7-1.7 2.8-.7.4-1.6.6-2.6.6zm11 0c-1 0-1.9-.2-2.6-.6-.2-1.1-.8-2.1-1.7-2.8.6-1.8 2.3-3.1 4.3-3.1 2.5 0 4.5 2 4.5 4.5s-2 4.5-4.5 4.5z"/>
+          </svg>
+          <span>TripAdvisor</span>
+        </a>
+        <a id="directWaLink" href="https://wa.me/584128642855" target="_blank" rel="noopener noreferrer" class="btn-social btn-whatsapp-direct">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19.02L7.55 18.84L4.44 19.66L5.27 16.63L5.07 16.31C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67Z"/>
+          </svg>
+          <span>WhatsApp</span>
+        </a>
+        <button type="button" id="btnOpenLoginModal" class="btn-social btn-admin" title="Panel de Edición del Menú (Requiere clave)">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Editar Menú</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Barra Fija de Control: Buscador y Filtros por Categoría -->
+  <section class="sticky-controls">
+    <div class="controls-inner">
+      <!-- Buscador en tiempo real -->
+      <div class="search-wrapper">
+        <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar hamburguesa, pancakes, café, pasta, postre o steak...">
+        <button type="button" id="searchClear" class="search-clear" title="Limpiar búsqueda">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Scroller de Categorías -->
+      <div id="categoriesContainer" class="categories-scroller">
+        <!-- Renderizado dinámicamente con JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenedor Principal de Catálogo -->
+  <main class="main-content">
+    <div class="catalog-summary">
+      <span id="productsCounter">Cargando delicias...</span>
+      <div class="delivery-badge-pill">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span>Entrega: <strong>10 - 15 min.</strong></span>
+      </div>
+    </div>
+
+    <!-- Contenedor de Productos Agrupados -->
+    <div id="productsContainer" class="products-grid">
+      <!-- Los productos se inyectan dinámicamente aquí -->
+    </div>
+  </main>
+
+  <!-- Botón Flotante de Carrito -->
+  <div id="floatingCartBtn" class="floating-cart-bar" style="display: none;">
+    <div class="cart-bar-left">
+      <div class="cart-icon-wrap">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+        <span id="cartBadge" class="cart-badge-count">0</span>
+      </div>
+      <div class="cart-bar-info">
+        <span class="cart-bar-label">Ver Pedido</span>
+        <span id="cartBtnTotal" class="cart-bar-price">$0.00</span>
+      </div>
+    </div>
+    <button type="button" class="btn-open-cart">
+      <span>Confirmar</span>
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Drawer / Modal del Carrito de Compras -->
+  <div id="cartDrawerOverlay" class="cart-drawer-overlay">
+    <div class="cart-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <h3>Tu Orden en Bullmarket</h3>
+        </div>
+        <button type="button" id="closeCartDrawer" class="btn-close-drawer" title="Cerrar carrito">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Selector de Tipo de Servicio -->
+      <div class="service-selector">
+        <button type="button" class="btn-service active" data-service="onsite">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 18h12M6 6h12M9 6v12M15 6v12M3 18v3M21 18v3"/>
+          </svg>
+          <span>En Mesa / Salón</span>
+        </button>
+        <button type="button" class="btn-service" data-service="pickup">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span>Para Retirar</span>
+        </button>
+        <button type="button" class="btn-service" data-service="delivery">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="5" cy="17" r="3"></circle>
+            <circle cx="19" cy="17" r="3"></circle>
+            <path d="M12 17h4v-5h-3l-2-4H7v9h2"></path>
+          </svg>
+          <span>Delivery</span>
+        </button>
+      </div>
+
+      <!-- Lista de Ítems del Carrito -->
+      <div id="cartItemsList" class="cart-items-scroll">
+        <!-- Renderizado dinámico -->
+      </div>
+
+      <!-- Formulario de Checkout y Datos de Envío -->
+      <div class="cart-checkout-form">
+        <div class="form-row">
+          <div class="input-group">
+            <label for="clientName">Nombre y Apellido *</label>
+            <input type="text" id="clientName" placeholder="Tu nombre" required>
+          </div>
+          <div class="input-group">
+            <label for="clientPhone">Teléfono de Contacto</label>
+            <input type="tel" id="clientPhone" placeholder="0412 1234567">
+          </div>
+        </div>
+
+        <div id="locationFieldGroup" class="input-group">
+          <label id="locationLabel" for="locationInput">Número de Mesa o Ubicación *</label>
+          <input type="text" id="locationInput" placeholder="Ej: Mesa 4, Terraza, Galería..." required>
+        </div>
+
+        <div class="input-group">
+          <label for="paymentMethod">Método de Pago Preferido</label>
+          <select id="paymentMethod" class="select-payment">
+            <option value="cash_usd">Efectivo USD ($)</option>
+            <option value="zelle">Zelle</option>
+            <option value="pagomovil">Pago Móvil (Bs. Tasa del día)</option>
+            <option value="tarjeta">Punto de Venta / Tarjeta (En local)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="orderNotes">Notas Especiales para la Cocina (Opcional)</label>
+          <input type="text" id="orderNotes" placeholder="Ej: Término medio, sin salsas, poco picante...">
+        </div>
+      </div>
+
+      <!-- Footer del Drawer con Totales y Botón WhatsApp -->
+      <div class="drawer-footer">
+        <div class="summary-breakdown">
+          <div class="summary-line">
+            <span>Subtotal:</span>
+            <span id="subtotalAmount">$0.00</span>
+          </div>
+          <div class="summary-line total">
+            <span>Total a Pagar:</span>
+            <span id="totalAmount">$0.00</span>
+          </div>
+        </div>
+
+        <div class="drawer-action-buttons">
+          <button type="button" id="clearCartBtn" class="btn-clear-cart" title="Vaciar carrito">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Vaciar</span>
+          </button>
+          <button type="button" id="btnSendWhatsapp" class="btn-send-whatsapp">
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19.02L7.55 18.84L4.44 19.66L5.27 16.63L5.07 16.31C4.24 14.99 3.81 13.47 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67Z"/>
+            </svg>
+            <span>Enviar Pedido por WhatsApp</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detalle de Producto -->
+  <div id="productModal" class="modal-overlay">
+    <div class="modal-card">
+      <button type="button" id="closeProductModal" class="btn-close-modal" title="Cerrar">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="modal-img-wrap" id="modalImgWrap">
+        <img id="modalProductImg" src="" alt="Producto Bullmarket">
+        <button type="button" id="btnPrevProductImg" class="btn-slider-arrow btn-slider-prev" title="Foto anterior" style="display: none;">‹</button>
+        <button type="button" id="btnNextProductImg" class="btn-slider-arrow btn-slider-next" title="Foto siguiente" style="display: none;">›</button>
+        <div id="modalGalleryDots" class="modal-gallery-dots" style="display: none;"></div>
+        <button type="button" id="btnZoomModalImg" class="btn-zoom-img" title="Ver foto en tamaño completo">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <polyline points="9 21 3 21 3 15"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+        </button>
+        <span id="modalProductBadge" class="modal-badge"></span>
+      </div>
+
+      <!-- Tira de Miniaturas de la Galería del Plato -->
+      <div id="modalGalleryThumbsClient" class="modal-gallery-thumbs-client" style="display: none;"></div>
+
+      <div class="modal-body">
+        <span id="modalProductCategory" class="modal-category"></span>
+        <h2 id="modalProductTitle" class="modal-title"></h2>
+        <div id="modalProductPrice" class="modal-price"></div>
+        <p id="modalProductDesc" class="modal-description"></p>
+
+        <!-- Indicaciones especiales -->
+        <div class="modal-instructions-group">
+          <label for="modalSpecialNotes">Notas o Personalización del Plato:</label>
+          <input type="text" id="modalSpecialNotes" placeholder="Ej: Término 3/4, sin cebolla, aderezo aparte...">
+        </div>
+
+        <div class="modal-actions-row">
+          <div class="quantity-control">
+            <button type="button" id="btnDecreaseQty" class="btn-qty" aria-label="Disminuir">-</button>
+            <span id="modalQuantityDisplay" class="qty-display">1</span>
+            <button type="button" id="btnIncreaseQty" class="btn-qty" aria-label="Aumentar">+</button>
+          </div>
+          <button type="button" id="btnAddToCartModal" class="btn-add-modal">
+            <span>Agregar a la orden</span>
+            <span id="modalAddPrice">$0.00</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox de Imagen Completa -->
+  <div id="imageLightboxModal" class="lightbox-overlay">
+    <div class="lightbox-content">
+      <button type="button" id="closeLightboxBtn" class="btn-close-lightbox" title="Cerrar vista previa">
+        <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <img id="lightboxImg" src="" alt="Foto ampliada">
+      <div id="lightboxTitle" class="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <!-- Modal de Autenticación para Editar Menú -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 440px;">
+      <button type="button" id="closeLoginModal" class="btn-close-modal" title="Cerrar">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="login-modal-header">
+        <div class="login-modal-icon">
+          <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h3 class="login-modal-title">Acceso de Administrador</h3>
+        <p class="login-modal-sub">Ingresa tus credenciales para editar productos, precios y disponibilidad del menú.</p>
+      </div>
+
+      <form id="loginForm" class="login-modal-form">
+        <div id="loginErrorMsg" class="login-error-alert" style="display: none;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span id="loginErrorText">Usuario o contraseña incorrectos.</span>
+        </div>
+
+        <div class="form-group-login">
+          <label for="loginUsername">Usuario de Administrador *</label>
+          <input type="text" id="loginUsername" class="login-input" placeholder="Ej: admin" required autocomplete="username">
+        </div>
+
+        <div class="form-group-login">
+          <label for="loginPassword">Contraseña *</label>
+          <div class="password-input-wrap">
+            <input type="password" id="loginPassword" class="login-input" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" id="btnTogglePassword" class="btn-toggle-pwd" title="Mostrar/ocultar contraseña">
+              <svg id="eyeOpenIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg id="eyeClosedIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display: none;">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-hint-box">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>Credenciales iniciales: <strong>admin</strong> / <strong>bullmarket2026</strong></span>
+        </div>
+
+        <button type="submit" class="btn-submit-login">
+          <span>Ingresar y Modificar</span>
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast de Notificaciones -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Footer Informativo -->
+  <footer class="main-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="logo-bullmarket.png" onerror="this.src='https://assets.olaclick.app/companies/logos/be35feb9-65e1-4d35-aff6-f2b8a2fa7fd2.png'" alt="Bullmarket Logo">
+        <h3>BULLMARKET</h3>
+      </div>
+      <p class="footer-text">Brunch, Bistro & Gourmet Burgers • Barquisimeto, Lara, Venezuela</p>
+      <div class="footer-schedule">
+        <span>⏰ Lunes a Domingo: 8:00 AM - 10:00 PM • Brunch & Cenas</span>
+      </div>
+      <div class="footer-links">
+        <a id="footerInstagramLink" href="https://www.instagram.com/bullmarket_bqto/" target="_blank" rel="noopener noreferrer">@bullmarket_bqto</a>
+        <span>•</span>
+        <a id="footerGoogleMapsLink" href="https://www.google.com/maps/place/Bull+Market+%26+Brunch/data=!4m2!3m1!1s0x0:0xa7d99ba7b0023584?sa=X&ved=1t:2428&ictx=111" target="_blank" rel="noopener noreferrer">Google Maps</a>
+        <span>•</span>
+        <a id="footerTripAdvisorLink" href="https://www.tripadvisor.es/Restaurant_Review-g316090-d25275311-Reviews-Bull_Market_Brunch-Barquisimeto_Central_Western_Region.html" target="_blank" rel="noopener noreferrer">TripAdvisor</a>
+        <span>•</span>
+        <a id="footerWhatsappLink" href="https://wa.me/584128642855" target="_blank" rel="noopener noreferrer">+58 412 864 2855</a>
+        <span>•</span>
+        <a href="#" id="footerAdminLink">Panel de Edición</a>
+      </div>
+      <p class="footer-copy">© 2026 BULLMARKET. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
