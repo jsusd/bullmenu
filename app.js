@@ -35,12 +35,69 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function getDeletedIds() {
+    const baseRemoved = typeof BULLMARKET_REMOVED_IDS !== "undefined" && Array.isArray(BULLMARKET_REMOVED_IDS) ? BULLMARKET_REMOVED_IDS : [];
+    try {
+      const saved = localStorage.getItem("bullmarket_deleted_ids");
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.from(new Set([...baseRemoved, ...(Array.isArray(parsed) ? parsed : [])]));
+    } catch (e) {
+      return [...baseRemoved];
+    }
+  }
+
   function getProducts() {
+    const deletedSet = new Set(getDeletedIds());
     try {
       const saved = localStorage.getItem("bullmarket_products");
-      return saved ? JSON.parse(saved) : (typeof PRODUCTS !== "undefined" ? PRODUCTS : []);
+      const list = saved ? JSON.parse(saved) : (typeof PRODUCTS !== "undefined" ? [...PRODUCTS] : []);
+      return list.filter(p => p && !deletedSet.has(p.id));
     } catch (e) {
-      return typeof PRODUCTS !== "undefined" ? PRODUCTS : [];
+      const fallback = typeof PRODUCTS !== "undefined" ? [...PRODUCTS] : [];
+      return fallback.filter(p => p && !deletedSet.has(p.id));
+    }
+  }
+
+  function openBullmarketIDB() {
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) return reject(new Error("No IDB"));
+      const req = indexedDB.open("bullmarket_db", 1);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("store")) {
+          db.createObjectStore("store");
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function idbGet(key) {
+    try {
+      const db = await openBullmarketIDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("store", "readonly");
+        const req = tx.objectStore("store").get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  async function idbSet(key, val) {
+    try {
+      const db = await openBullmarketIDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("store", "readwrite");
+        tx.objectStore("store").put(val, key);
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch (e) {
+      return false;
     }
   }
 
@@ -131,12 +188,91 @@ document.addEventListener("DOMContentLoaded", () => {
   // Inicialización de la aplicación
   initApp();
 
+  function refreshMenuFromStorage() {
+    state.config = getConfig();
+    state.categories = getCategories();
+    state.products = getProducts();
+    renderBrandHeader();
+    renderCategories();
+    renderProducts();
+  }
+
+  async function syncDataFromIDBAndCloud() {
+    try {
+      const localUpdated = Number(localStorage.getItem("bullmarket_updated_at") || 0);
+      const idbSnap = await idbGet("bullmarket_snapshot");
+      if (idbSnap && Array.isArray(idbSnap.products) && (idbSnap.updatedAt || 0) >= localUpdated) {
+        const delSet = new Set(getDeletedIds());
+        state.products = idbSnap.products.filter(p => p && !delSet.has(p.id));
+        if (Array.isArray(idbSnap.categories) && idbSnap.categories.length > 0) state.categories = idbSnap.categories;
+        if (idbSnap.config) state.config = idbSnap.config;
+        renderBrandHeader();
+        renderCategories();
+        renderProducts();
+      } else {
+        const idbProds = await idbGet("bullmarket_products");
+        if (Array.isArray(idbProds) && idbProds.length > 0 && !localStorage.getItem("bullmarket_products")) {
+          const delSet = new Set(getDeletedIds());
+          state.products = idbProds.filter(p => p && !delSet.has(p.id));
+          renderCategories();
+          renderProducts();
+        }
+      }
+
+      const res = await fetch("/.netlify/functions/menu?t=" + Date.now(), { cache: "no-store" });
+      if (res.ok) {
+        const cloud = await res.json();
+        const currentUpdated = Math.max(localUpdated, (idbSnap && idbSnap.updatedAt) || 0);
+        if (cloud && Array.isArray(cloud.products) && (cloud.updatedAt || 0) > currentUpdated) {
+          if (Array.isArray(cloud.deletedIds)) {
+            localStorage.setItem("bullmarket_deleted_ids", JSON.stringify(cloud.deletedIds));
+          }
+          const delSet = new Set(getDeletedIds());
+          state.products = cloud.products.filter(p => p && !delSet.has(p.id));
+          if (Array.isArray(cloud.categories) && cloud.categories.length > 0) state.categories = cloud.categories;
+          if (cloud.config) state.config = cloud.config;
+          localStorage.setItem("bullmarket_updated_at", String(cloud.updatedAt));
+          try {
+            localStorage.setItem("bullmarket_products", JSON.stringify(state.products));
+          } catch (_) {}
+          await idbSet("bullmarket_snapshot", cloud);
+          renderBrandHeader();
+          renderCategories();
+          renderProducts();
+        }
+      }
+    } catch (e) {
+      // Silencioso en modo offline/estático
+    }
+  }
+
   function initApp() {
     renderBrandHeader();
     renderCategories();
     renderProducts();
     updateCartUI();
     setupEventListeners();
+    syncDataFromIDBAndCloud();
+
+    // Sincronizar automáticamente al regresar del panel admin (iPhone Safari bfcache, pestañas, foco)
+    window.addEventListener("pageshow", () => {
+      refreshMenuFromStorage();
+      syncDataFromIDBAndCloud();
+    });
+    window.addEventListener("focus", () => {
+      refreshMenuFromStorage();
+      syncDataFromIDBAndCloud();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        refreshMenuFromStorage();
+        syncDataFromIDBAndCloud();
+      }
+    });
+    window.addEventListener("storage", () => {
+      refreshMenuFromStorage();
+      syncDataFromIDBAndCloud();
+    });
   }
 
   // --- RENDERIZADO DE CABECERA Y NEGOCIO ---

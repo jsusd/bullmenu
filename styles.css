@@ -1842,16 +1842,9 @@ body {
   75% { transform: translateX(5px); }
 }
 
-.login-hint-box {
-  background: rgba(242, 170, 31, 0.1);
-  border: 1px solid rgba(242, 170, 31, 0.25);
-  color: var(--color-gold);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 0.76rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.login-hint-box,
+.gate-hint-box {
+  display: none !important;
 }
 
 .btn-submit-login {

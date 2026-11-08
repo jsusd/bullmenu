@@ -66,30 +66,13 @@ const CATEGORIES = [
   { id: "refrescos", name: "Refrescos", icon: "can" }
 ];
 
+const BULLMARKET_REMOVED_IDS = [
+  "promos-papilote-de-merluza",
+  "promos-merluza-frita"
+];
+
 const PRODUCTS = [
   // ==================== PROMOS & BOXES ====================
-  {
-    id: "promos-papilote-de-merluza",
-    categoryId: "promos",
-    categoryName: "Promos & Boxes",
-    name: "Papilote de Merluza",
-    description: "Delicado filete de merluza al papilote con aromáticas hierbas, acompañado de suave puré de papas.",
-    price: 11.95,
-    image: "https://assets.olaclick.app/companies/products/images/800/f961d785-fccf-44ca-a24c-a742feb9e115.jpeg",
-    badge: "Promo",
-    available: true
-  },
-  {
-    id: "promos-merluza-frita",
-    categoryId: "promos",
-    categoryName: "Promos & Boxes",
-    name: "Merluza frita",
-    description: "Crujiente merluza dorada servida con ensalada fresca de la casa y tostones de plátano.",
-    price: 11.95,
-    image: "https://assets.olaclick.app/companies/products/images/800/7bca43a0-eb1d-4744-8b08-15d75fa24f0f.jpeg",
-    badge: "Promo",
-    available: true
-  },
   {
     id: "promos-full-box-chicken",
     categoryId: "promos",

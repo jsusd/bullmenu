@@ -127,6 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderCategoriesTable();
     loadSettingsIntoForm();
     setupEventListeners();
+    syncFromStorageAndCloud();
   }
 
   // --- VERIFICACIÓN DE AUTENTICACIÓN ADMIN ---
@@ -146,23 +147,163 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // --- SOPORTE INDEXEDDB Y NUBE (ILIMITADO PARA FOTOS MÓVILES) ---
+  function openBullmarketIDB() {
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) return reject(new Error("No IDB"));
+      const req = indexedDB.open("bullmarket_db", 1);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("store")) {
+          db.createObjectStore("store");
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function idbSet(key, val) {
+    try {
+      const db = await openBullmarketIDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("store", "readwrite");
+        tx.objectStore("store").put(val, key);
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function idbGet(key) {
+    try {
+      const db = await openBullmarketIDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("store", "readonly");
+        const req = tx.objectStore("store").get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  function getDeletedIds() {
+    const baseRemoved = typeof BULLMARKET_REMOVED_IDS !== "undefined" && Array.isArray(BULLMARKET_REMOVED_IDS) ? BULLMARKET_REMOVED_IDS : [];
+    try {
+      const saved = localStorage.getItem("bullmarket_deleted_ids");
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.from(new Set([...baseRemoved, ...(Array.isArray(parsed) ? parsed : [])]));
+    } catch (e) {
+      return [...baseRemoved];
+    }
+  }
+
+  function addDeletedId(id) {
+    try {
+      const current = getDeletedIds();
+      if (!current.includes(id)) {
+        current.push(id);
+      }
+      localStorage.setItem("bullmarket_deleted_ids", JSON.stringify(current));
+      idbSet("bullmarket_deleted_ids", current);
+    } catch (e) {
+      console.warn("No se pudo guardar deleted_id en localStorage", e);
+    }
+  }
+
+  async function pushMenuToCloud() {
+    try {
+      const payload = {
+        updatedAt: Date.now(),
+        products: state.products,
+        categories: state.categories,
+        config: state.config,
+        deletedIds: getDeletedIds()
+      };
+      localStorage.setItem("bullmarket_updated_at", String(payload.updatedAt));
+      await idbSet("bullmarket_snapshot", payload);
+      await fetch("/.netlify/functions/menu", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      // Silencioso en entorno local sin Netlify Functions
+    }
+  }
+
+  async function syncFromStorageAndCloud() {
+    try {
+      const localUpdated = Number(localStorage.getItem("bullmarket_updated_at") || 0);
+      const idbSnap = await idbGet("bullmarket_snapshot");
+      if (idbSnap && Array.isArray(idbSnap.products) && (idbSnap.updatedAt || 0) >= localUpdated) {
+        const delSet = new Set(getDeletedIds());
+        state.products = idbSnap.products.filter(p => !delSet.has(p.id));
+        if (Array.isArray(idbSnap.categories) && idbSnap.categories.length > 0) state.categories = idbSnap.categories;
+        if (idbSnap.config) state.config = idbSnap.config;
+        populateCategoryDropdowns();
+        renderMetrics();
+        renderProductsTable();
+        renderCategoriesTable();
+      }
+      const res = await fetch("/.netlify/functions/menu?t=" + Date.now(), { cache: "no-store" });
+      if (res.ok) {
+        const cloud = await res.json();
+        const currentUpdated = Math.max(localUpdated, (idbSnap && idbSnap.updatedAt) || 0);
+        if (cloud && Array.isArray(cloud.products) && (cloud.updatedAt || 0) > currentUpdated) {
+          if (Array.isArray(cloud.deletedIds)) {
+            localStorage.setItem("bullmarket_deleted_ids", JSON.stringify(cloud.deletedIds));
+          }
+          const delSet = new Set(getDeletedIds());
+          state.products = cloud.products.filter(p => !delSet.has(p.id));
+          if (Array.isArray(cloud.categories) && cloud.categories.length > 0) state.categories = cloud.categories;
+          if (cloud.config) state.config = cloud.config;
+          localStorage.setItem("bullmarket_updated_at", String(cloud.updatedAt));
+          try {
+            localStorage.setItem("bullmarket_products", JSON.stringify(state.products));
+          } catch (_) {}
+          await idbSet("bullmarket_snapshot", cloud);
+          populateCategoryDropdowns();
+          renderMetrics();
+          renderProductsTable();
+          renderCategoriesTable();
+        }
+      }
+    } catch (e) {
+      // Funciona normalmente offline
+    }
+  }
+
   // --- CARGA Y PERSISTENCIA DE DATOS ---
   function loadProducts() {
+    const deletedSet = new Set(getDeletedIds());
     try {
       const saved = localStorage.getItem("bullmarket_products");
-      return saved ? JSON.parse(saved) : (typeof PRODUCTS !== "undefined" ? PRODUCTS : []);
+      const list = saved ? JSON.parse(saved) : (typeof PRODUCTS !== "undefined" ? [...PRODUCTS] : []);
+      return list.filter(p => p && !deletedSet.has(p.id));
     } catch (e) {
-      return typeof PRODUCTS !== "undefined" ? PRODUCTS : [];
+      const fallback = typeof PRODUCTS !== "undefined" ? [...PRODUCTS] : [];
+      return fallback.filter(p => p && !deletedSet.has(p.id));
     }
   }
 
   function saveProducts() {
+    const deletedSet = new Set(getDeletedIds());
+    state.products = state.products.filter(p => p && !deletedSet.has(p.id));
+    const now = Date.now();
     try {
+      localStorage.setItem("bullmarket_updated_at", String(now));
       localStorage.setItem("bullmarket_products", JSON.stringify(state.products));
-      renderMetrics();
     } catch (e) {
-      console.error("Error guardando productos", e);
+      console.warn("Cuota de localStorage alcanzada, guardando respaldo comprimido e IndexedDB:", e);
     }
+    idbSet("bullmarket_products", state.products);
+    pushMenuToCloud();
+    renderMetrics();
   }
 
   function loadCategories() {
@@ -182,6 +323,8 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) {
       console.error("Error guardando categorías", e);
     }
+    idbSet("bullmarket_categories", state.categories);
+    pushMenuToCloud();
   }
 
   function loadConfig() {
@@ -217,6 +360,8 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) {
       console.error("Error guardando config", e);
     }
+    idbSet("bullmarket_config", state.config);
+    pushMenuToCloud();
   }
 
   // --- NAVEGACIÓN ENTRE SECCIONES ---
@@ -553,36 +698,68 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 1. Modificar Foto Actual (Subir archivo PC)
+  // Comprimir fotos de teléfono/PC automáticamente para no exceder cuota de memoria (5MB -> ~60KB)
+  function compressImageFile(file, maxDimension = 850, quality = 0.78) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const rawDataUrl = event.target.result;
+        const img = new Image();
+        img.onload = () => {
+          try {
+            let width = img.width;
+            let height = img.height;
+            if (width > maxDimension || height > maxDimension) {
+              if (width > height) {
+                height = Math.round((height * maxDimension) / width);
+                width = maxDimension;
+              } else {
+                width = Math.round((width * maxDimension) / height);
+                height = maxDimension;
+              }
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL("image/jpeg", quality);
+            resolve(compressed);
+          } catch (err) {
+            resolve(rawDataUrl);
+          }
+        };
+        img.onerror = () => resolve(rawDataUrl);
+        img.src = rawDataUrl;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // 1. Modificar Foto Actual (Subir archivo móvil/PC comprimido)
   if (prodFileInput) {
-    prodFileInput.addEventListener("change", (e) => {
+    prodFileInput.addEventListener("change", async (e) => {
       const file = e.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          modalImages[activeImageIndex] = event.target.result;
-          renderModalGallery();
-          showAdminToast("Foto modificada con éxito");
-        };
-        reader.readAsDataURL(file);
+        const compressedUrl = await compressImageFile(file);
+        modalImages[activeImageIndex] = compressedUrl;
+        renderModalGallery();
+        showAdminToast("Foto optimizada y modificada con éxito");
         e.target.value = "";
       }
     });
   }
 
-  // 2. Agregar Otra Foto Adicional (Subir archivo PC)
+  // 2. Agregar Otra Foto Adicional (Subir archivo móvil/PC comprimido)
   if (prodAddAnotherFileInput) {
-    prodAddAnotherFileInput.addEventListener("change", (e) => {
+    prodAddAnotherFileInput.addEventListener("change", async (e) => {
       const file = e.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          modalImages.push(event.target.result);
-          activeImageIndex = modalImages.length - 1;
-          renderModalGallery();
-          showAdminToast("¡Nueva foto agregada a la galería!");
-        };
-        reader.readAsDataURL(file);
+        const compressedUrl = await compressImageFile(file);
+        modalImages.push(compressedUrl);
+        activeImageIndex = modalImages.length - 1;
+        renderModalGallery();
+        showAdminToast("¡Nueva foto optimizada y agregada a la galería!");
         e.target.value = "";
       }
     });
@@ -700,6 +877,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!prod) return;
 
     if (confirm(`¿Estás seguro de eliminar "${prod.name}" permanentemente del menú?`)) {
+      addDeletedId(id);
       state.products = state.products.filter(p => p.id !== id);
       saveProducts();
       renderProductsTable();
@@ -1005,6 +1183,8 @@ const BULLMARKET_CONFIG = ${JSON.stringify(state.config, null, 2)};
 
 const CATEGORIES = ${JSON.stringify(state.categories, null, 2)};
 
+const BULLMARKET_REMOVED_IDS = ${JSON.stringify(getDeletedIds(), null, 2)};
+
 const PRODUCTS = ${JSON.stringify(state.products, null, 2)};
 `;
 
@@ -1081,11 +1261,17 @@ const PRODUCTS = ${JSON.stringify(state.products, null, 2)};
 
   // --- RESTABLECER DE FÁBRICA ---
   if (btnResetDefaults) {
-    btnResetDefaults.addEventListener("click", () => {
-      if (confirm("⚠️ ¿Estás seguro de restablecer el catálogo de fábrica? Esto descartará modificaciones locales y volverá a los 186 productos oficiales extraídos de OlaClick.")) {
+    btnResetDefaults.addEventListener("click", async () => {
+      if (confirm("⚠️ ¿Estás seguro de restablecer el catálogo de fábrica? Esto descartará modificaciones locales y volverá al catálogo oficial.")) {
         localStorage.removeItem("bullmarket_products");
         localStorage.removeItem("bullmarket_categories");
         localStorage.removeItem("bullmarket_config");
+        localStorage.removeItem("bullmarket_deleted_ids");
+        localStorage.removeItem("bullmarket_updated_at");
+        try {
+          await idbSet("bullmarket_snapshot", null);
+          await idbSet("bullmarket_products", null);
+        } catch (_) {}
         window.location.reload();
       }
     });
