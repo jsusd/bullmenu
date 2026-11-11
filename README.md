@@ -1,144 +1,107 @@
-# 🍹 Plataforma Digital BullBar Social Lounge (Menú, Reservas & Administración)
+# 🍔 Plataforma de Menú Interactivo & Pedidos - BULLMARKET
 
-Plataforma web integral diseñada para **BullBar** (Barquisimeto, Venezuela), compuesta por 3 aplicaciones complementarias:
-1. **Menú Digital Interactivo de Clientes (`index.html`)**: Catálogo gastronómico completo, fotos HD, descripciones, visor de imágenes, carrito de compras y toma de pedidos dirigida a **WhatsApp (+58 422 888 8356)**.
-2. **App de Recepción y Captación de Reservaciones (`reservas.html`)**: Plataforma dirigida a captar clientes para mesas, cumpleaños y eventos VIP, con catálogo de servicios, precios transparentes, fotos de instalaciones con Lightbox, generador de comprobante con código QR, envío a WhatsApp y **Panel de Recepción & Hostess** en vivo para controlar la llegada de comensales en puerta.
-3. **Panel Administrativo Interno (`admin.html`)**: Plataforma de control estilo OlaClick para editar precios, productos, subir fotos, gestionar categorías, horarios, métricas y pedidos sin tocar código.
+Plataforma web moderna, de alta velocidad y mobile-first diseñada para **BULLMARKET (Brunch, Bistro & Gourmet Burgers)** en Barquisimeto, Venezuela.
+
+Incluye la **base de datos completa de 186 productos** sincronizada desde su menú oficial de OlaClick (`https://bullmarket-brunch.ola.click/products`), fotos oficiales en alta resolución, descripciones gastronómicas, carrito interactivo con pedido automático al **WhatsApp oficial (+58 412 864 2855)** y una **plataforma completa de administración (CMS)** para editar productos, precios, fotos, disponibilidad y horarios.
 
 ---
 
-## 🖥️ 1. Panel Administrativo Interno (`admin.html`)
+## ✨ Características Principales
 
-El panel administrativo permite al equipo de BullBar controlar todo el menú en tiempo real:
+### 1. 📋 Catálogo Completo & Oficial (186 Productos)
+- **18 Secciones / Categorías:**
+  - 🔥 **Promos & Boxes:** Papilote de Merluza, Full Box Chicken, Bull Boxes 1, 2 y 3, Parrilla Bull, Bull House.
+  - 🥞 **Brunch & Desayunos:** Pancakes tradicionales, Pancakes Bacon, Waffles, Waffles Free sin gluten, Desayuno Americano, Francés, Criollo, Salmón Toast, Huevos Benedictinos, Omelettes, Plato Keto.
+  - 🥪 **Sandwiches & Croissants:** Clásico, Sandwich Bull, Croissant American Delight, Ibérico, Italiano, Ratatouille.
+  - 🥩 **Platos Principales:** Cowboy Steak (550gr), Lomito al grill, New York Steak, Tomahawk de Cerdo, Costillas BBQ, Salmón al ajillo, Róbalo al gratén.
+  - 🍗 **Entradas & Compartir:** Ceviche Bull, Carpaccio de lomito, Camarones al ajillo, Tartar de salmón, Dedos de mozzarella, Arepitas con nata, Fish & Chips, BBQ Wings, Búfalo Wings, Tenders, Tequeños (9 und) y Pasteles Bull.
+  - 🥗 **Livianitos & Bowls:** Strogonoff de lomito y puré, Cordon Bleu con césar, Lasaña Bull (pasticho venezolano), Cotoletta de res/pollo, Pollo Toscano.
+  - 🍝 **Pastas Italianas:** 4 Quesos, Alfredo, Carbonara, Del Pruno, Sinatra, Brava, Bologna, Napolitana.
+  - 🥑 **Ensaladas Frescas:** Mediterránea, Salmón, César Clásica, César con Pollo, Duquesa, Rusttys Salad.
+  - 🍔 **Hamburguesas Gourmet:** Bull Master (Ganadora Burger Master 2024), Bull Burger (Ganadora As Burger 2024), Beasty Burger (3 carnes), Big Boss, Pulled Pork, Full Cheese, K-Chicken (estilo coreano), Parrillera, Llanera, Street Molly.
+  - 🥪 **Paninis Tostados:** Italiano con prosciutto, Panini Bull con brisket ahumado, Lomito con doble queso, Argentino, Roast Beef, Atún.
+  - 👶 **Menú Infantil:** Mac & Cheese / Nápoles, Papas bacon-cheese, Mini Burger con papas, Tequeños kids.
+  - 🍰 **Postres & Repostería:** Choco Master (Ganador Sweet Master 2024), Cheesecake de Cinnamon, Golden Queen, Cheesecakes NY (Fresa, Chocoavellana, Oreo, Sugar Free), Torta de Matilda, Red Velvet, Zanahoria, Milhojas, Tres Leches, Galletas NY, Alfajores, Muffins.
+  - 🥐 **Panadería Dulce:** Roll New York Chocolate con avellanas, Cachito tradicional de jamón, Panes de queso rellenos.
+  - ☕ **Cafetería de Especialidad:** Espresso, Americano, Capuccino, Latte, Mocaccino, Caramel Macchiato, Frappuccino, Baileys Coffee, Affogato Manhattan/California/NY, Carajillo con ron, Toddy caliente.
+  - 🍵 **Té & Infusiones:** Ginger Chai (hebras), Matcha Ceremonial, Spiced Chai, Taro Mix, Bubble Tea.
+  - 🥤 **Batidos & Bebidas:** Bullshake, Merengadas, Batidos naturales, Té Lipton, Jugos Yukery, Pepsi, Coca-Cola, Chinotto, Golden, 7UP.
 
+---
+
+### 2. 📱 Experiencia de Usuario (Mobile-First)
+- **Buscador instantáneo** que filtra en tiempo real por nombre del plato, ingredientes o categoría.
+- **Selector de categorías deslizables** horizontalmente con contador de productos en vivo.
+- **Modal de Detalle Gastronómico:** Permite ver la foto ampliada, descripción gourmet, notas personalizadas para la cocina (ej: *"término 3/4, sin cebolla, aderezo aparte"*) y selector de cantidades.
+- **Lightbox de Zoom:** Permite ver la foto de cualquier plato a pantalla completa con un solo toque.
+
+---
+
+### 3. 🛍️ Carrito de Compras & Enrutamiento a WhatsApp
+- **Selector de modalidad de servicio:**
+  - 🪑 **En Mesa / Salón:** Solicita el número de mesa o ubicación en el restaurante.
+  - 🛍️ **Para Retirar (Pick Up):** Listo para buscar en la barra o mostrador.
+  - 🛵 **Delivery a Domicilio:** Solicita la dirección exacta y punto de referencia.
+- **Métodos de pago:** Efectivo USD ($), Zelle, Pago Móvil (Bs. Tasa del día), Tarjeta / Punto de Venta.
+- **Botón "Enviar Pedido por WhatsApp":** Construye automáticamente un mensaje profesional con formato limpio, emojis, número de orden, ítems detallados, notas de cocina y total a pagar, abriendo el chat directo con el WhatsApp oficial de Bullmarket (+58 412 864 2855).
+
+---
+
+### 4. ⚙️ Plataforma de Administración y Edición del Menú (`admin.html`)
+- **Protección de Seguridad con Clave de Administrador:**
+  - Al hacer clic en **"Editar Menú"** en el menú de clientes o al abrir directamente `admin.html`, el sistema solicita autenticación obligatoria.
+  - **Credenciales Oficiales de Administrador:**
+    - **Usuario:** `admin` *(o el alias `bullmarket`)*
+    - **Contraseña:** `bullmarket2026`
+  - Puedes cambiar el usuario y la contraseña en cualquier momento desde la pestaña **"Horarios y Negocio"** -> **"Seguridad y Clave de Administrador"**.
 - **Gestión de Productos:**
-  - Agregar nuevos platos, tragos o botellas con el botón **"+ Nuevo Producto"**.
-  - Modificar precios en USD ($), nombres y descripciones.
-  - Asignar etiquetas promocionales (ej: *"2x1"*, *"Super Promo"*, *"Autor BullBar"*).
-  - **Adjuntar imágenes:** Puedes subir fotos directamente desde tu computadora (PC o móvil) o ingresar un enlace URL externo.
-  - **Switch de disponibilidad en un clic:** Marca productos como *"Disponible"* o *"Agotado / Pausado"* para que los clientes no puedan pedirlo cuando se termine el inventario.
-  - **Duplicar o eliminar productos**.
+  - Agregar nuevos platos, hamburguesas o bebidas.
+  - Editar precios, fotos, descripciones, categorías e insignias promocionales (*Promo, 2x1, Top Seller*).
+  - Pausar / activar disponibilidad con un switch con un solo clic (si un plato se agota, márcalo como "Agotado").
+  - Subir fotos desde tu computadora o pegar enlaces de internet con vista previa instantánea.
+  - Eliminar productos obsoletos.
 - **Gestión de Categorías:**
-  - Crear nuevas secciones (ej: *Postres, Shots, Hamburguesas*), editar nombres y ordenar el menú.
-- **Horarios y Estado de Apertura:**
-  - Interruptor rápido para abrir o cerrar el bar temporalmente con un solo clic.
-  - Configurar horarios de domingo a miércoles y de jueves a sábado.
-- **WhatsApp y Enlaces de Redes:**
-  - Cambiar el número de WhatsApp receptor de pedidos.
-  - Actualizar enlaces de Instagram y Google Maps.
-- **Sincronización en Tiempo Real:**
-  - Los cambios se guardan instantáneamente en el navegador y se reflejan en el menú de clientes en vivo.
-- **Descargar `data.js` Actualizado:**
-  - Con el botón **"Descargar data.js"**, se genera una copia limpia y lista para producción para respaldar tus cambios.
+  - Crear nuevas secciones o editar las existentes.
+- **Configuración del Negocio & Seguridad:**
+  - Modificar usuario y contraseña del administrador.
+  - Modificar el número de WhatsApp donde se reciben las órdenes.
+  - Modificar horarios semanales y de fin de semana.
+  - Cambiar el estado del local (Automático, Abierto o Cerrado temporalmente).
+- **Respaldar & Exportar:**
+  - **"Descargar data.js listo para producción":** Genera y descarga el archivo `data.js` actualizado con todos los cambios que hayas hecho en el panel para guardarlo permanentemente en la carpeta del proyecto.
+  - **Copia de seguridad JSON:** Exporta o importa un respaldo de todo el catálogo en un clic.
+  - **Restablecer de Fábrica:** Vuelve al catálogo original de 186 productos en cualquier momento.
 
 ---
 
-## 📊 2. Módulo de Métricas, Visitas y Analítica (`admin.html -> Métricas & Visitas`)
+## 🚀 ¿Cómo Abrir y Usar el Menú Localmente?
 
-Apartado dedicado a medir la efectividad comercial del menú con filtros por períodos de tiempo:
-
-- **Filtros por Períodos de Tiempo:**
-  - *Hoy*, *Últimos 7 Días*, *Últimos 30 Días*, *Este Mes* y *Todo el Historial*.
-- **Indicadores Clave de Desempeño (KPIs):**
-  - **Visitas al Menú:** Total de visitas y desglose porcentual móvil vs. computadora.
-  - **Clics / Interacciones:** Clics en fotos, botones de ver más y exploraciones.
-  - **Pedidos Concretados:** Cantidad de órdenes efectivamente enviadas a WhatsApp.
-  - **Facturación Total ($ USD):** Ingresos totales generados en el período.
-  - **Tasa de Conversión (%):** Porcentaje de visitantes que completaron un pedido.
-  - **Ticket Promedio ($ USD):** Gasto medio por cliente.
-- **Gráficos & Visualizaciones:**
-  - **Tendencia Diaria (Visitas vs. Pedidos):** Gráfico interactivo de barras con tooltips de visitas, pedidos y facturación día por día.
-  - **Modalidad de Consumo:** Comparativa porcentual entre *Mesa (Consumo en Local)*, *Delivery a Domicilio* y *Pick-Up*.
-  - **Métodos de Pago:** Distribución entre *Pago Móvil (Bs)*, *Efectivo ($ USD)*, *Zelle* y *Punto de Venta*.
-- **Top 5 Productos Más Populares:**
-  - Ranking de los cócteles, cervezas o platos más pedidos con fotos, volumen de venta y recaudación.
-- **Historial Completo de Pedidos Concretados:**
-  - Buscador en tiempo real por cliente o código.
-  - Visualización del ticket detallado con productos, cantidades, notas del comensal y método de pago.
-  - Botón **"+ Pedido de Prueba"** para simular una comanda al instante y ver la reacción de las métricas.
-  - Botón **"Exportar CSV"** para descargar la data completa a Microsoft Excel o Google Sheets.
----
+No requiere instalar ningún programa ni consola:
+1. Abre esta carpeta (`Menu Interactivo Bullmarket`).
+2. Haz **doble clic en `index.html`** para abrir el menú de clientes en Google Chrome, Edge, Safari o tu navegador preferido.
+3. Haz **doble clic en `admin.html`** para abrir el panel de control y edición.
 
 ---
 
-## 📱 3. Menú de Clientes (`index.html`)
+## 🌐 ¿Cómo Publicar el Menú en Internet Gratis?
 
-- **Diseño Mobile-First:** Rápido y fluido, pensado para usuarios que ingresan desde el link en la biografía de Instagram (`@bullbar_bqto`).
-- **Buscador en tiempo real y filtros por categoría**.
-- **Modal de Detalle con Visor de Fotos en Pantalla Completa (Lightbox):** Los clientes pueden pulsar sobre la foto de cualquier producto para verla ampliada como referencia visual.
-- **Acceso Directo a Redes:** Botones para Instagram, ficha de Google Maps, WhatsApp y botón de acceso directo a Reservas (`reservas.html`).
-- **Carrito de Compras y Pedidos:**
-  - Selección de modalidad: *En Mesa / Salón*, *Para Retirar (Pick Up)* o *Delivery*.
-  - Selección de método de pago: *Efectivo USD*, *Pago Móvil (Bs.)*, *Zelle* o *Punto de Venta*.
-  - Envío formateado con emojis directamente al WhatsApp de BullBar.
+Para colocar este nuevo menú interactivo en el perfil de Instagram (`@bullmarket_bqto`), Google Maps, TripAdvisor o en enlaces de WhatsApp:
 
----
+### Opción 1: Netlify Drop (La más rápida, toma 30 segundos)
+1. Ingresa a [app.netlify.com/drop](https://app.netlify.com/drop).
+2. Arrastra la carpeta `Menu Interactivo Bullmarket` completa a la ventana del navegador.
+3. Te generará un enlace público inmediato como `https://bullmarket-menu.netlify.app`.
 
-## 📅 4. App de Reservas & Recepción (`reservas.html`)
+### Opción 2: Vercel
+1. Ingresa a [vercel.com](https://vercel.com).
+2. Sube la carpeta o conecta tu repositorio de GitHub.
+3. Se publicará automáticamente con certificado SSL (HTTPS) y máxima velocidad.
 
-Aplicación dedicada a la **captación de clientes** y a la **recepción y control de mesas en local**:
-
-### 🎯 A. Modo Captación (Cliente)
-- **Servicios que Ofrecemos:**
-  - *Mesas & Salón VIP Lounge*: Sillones capitonados, atención de mesero exclusivo y servicio de botellas.
-  - *Celebraciones de Cumpleaños*: Bengalas chispeantes de cortesía, shot especial y dedicatoria del DJ.
-  - *After Office & Amigos*: Promos de tobo de 9 cervezas frías + 5 tequeños por $14.95 desde las 2:00 PM.
-  - *Coctelería de Autor & Colección 1552*: Mixología de autor con Cocuy Saroche y 2x1 en cócteles seleccionados.
-  - *Eventos Corporativos & Privados*: Alquiler de áreas, pantallas HD y sonido para empresas.
-  - *Noches de DJ & Música en Vivo*: Jueves a sábado con la mejor vibra bailable.
-- **Precios & Paquetes Transparentes:**
-  - *Consumo Libre*: **$0 costo de reserva** (consumo directo en local sin mínimo).
-  - *Pack After Office*: **$14.95** (Tobo 9 cervezas Polar + 5 tequeños).
-  - *Pack Cumpleaños VIP*: **$24.99** (Mesa decorada, bengala, 5 shots cumpleañeros y dedicatoria).
-  - *Pack VIP Lounge Botella*: **$49.99** (Sofás VIP, botella de licor, 4 mezcladores, hielera y snack).
-  - *Pack Pareja & Cócteles*: **$29.99** (2 cócteles de autor + 1 pizza artesanal + postre).
-  - *Extras Opcionales*: Torta de cumpleaños ($12), Vela de bengala ($2.50), Descorche ($15), Tobo extra ($9.95).
-- **Fotos de Nuestras Instalaciones (Galería con Lightbox HD):**
-  - Fotos de alta resolución de *Zona VIP Lounge*, *Terraza Open-Air*, *Barra de Coctelería* y *Salón Central*.
-  - Visor a pantalla completa con navegación por flechas, detalles de capacidad y botón de reserva rápida de zona.
-- **Formulario Inteligente de Reservación:**
-  - Atajos de fecha (*Hoy, Mañana, Este Viernes, Este Sábado*) y selector de calendario.
-  - Franjas horarias con slots acordes a los horarios de BullBar.
-  - Control de cantidad de personas (1 a 40+ invitados).
-  - Selección de motivo de visita y paquete de consumo.
-  - Resumen en tiempo real del monto estimado.
-  - **Envío a WhatsApp (+58 422 888 8356):** Formatea el mensaje con emojis y código único de reserva.
-  - **Comprobante Digital (Voucher VIP):** Muestra un ticket digital con código de verificación QR interactivo.
-
-### 📋 B. Modo Recepción & Hostess (Personal del Bar)
-- Acceso rápido protegido por PIN (`bullbar2026`) con switch en el menú superior.
-- **KPIs en Vivo:** Reservaciones de hoy, total de personas esperadas, cumpleaños agendados y pendientes.
-- **Gestión Operativa de Mesas:**
-  - Filtro por fecha (*Hoy, Mañana, Fin de Semana, Todas*) y por estado (*Pendientes, Confirmadas, En Mesa, Canceladas*).
-  - Buscador en tiempo real por nombre, teléfono o código de reserva.
-  - Botones de 1 clic para cambiar estado: *Confirmar*, *Sentar en Mesa (cliente en local)* y *Cancelar*.
-  - **Botón de Contacto por WhatsApp:** Abre WhatsApp con un saludo personalizado hacia el cliente para reconfirmar su asistencia.
-  - **Botón "+ Cargar Reservas Demo":** Para probar el flujo operativo al instante.
-  - **Exportar a CSV / Excel:** Descarga el listado completo para el capitán de meseros o administración.
+### Opción 3: GitHub Pages
+1. Sube los archivos a un repositorio en GitHub.
+2. Ve a **Settings -> Pages** y activa **Deploy from branch: main**.
+3. El menú estará disponible en `https://tu-usuario.github.io/Menu-Interactivo-Bullmarket`.
 
 ---
 
-## 🔐 5. Control de Acceso y Seguridad del Panel
-
-El panel administrativo y el modo de recepción incluyen protección mediante credenciales para evitar modificaciones no autorizadas:
-
-- **Panel Administrativo (`admin.html`):** Usuario `admin`, Contraseña `bullbar2026`.
-- **Modo Recepción / Hostess (`reservas.html -> Modo Recepción`):** Clave de acceso rápido `bullbar2026`.
-- **Cambio de Contraseña:** Desde la sección **"Horarios y Negocio -> Seguridad y Contraseña del Panel"** en `admin.html`.
-
----
-
-## 🚀 ¿Cómo Probar la Plataforma?
-
-1. **Para reservar mesas o ver instalaciones (`reservas.html`):** Abre [reservas.html](file:///c:/Users/pauli/Downloads/menu%20interactivo%20bullbar/reservas.html) con doble clic. Puedes explorar los servicios, precios, la galería de fotos en pantalla completa, completar una reserva de prueba hacia WhatsApp y entrar al **Modo Recepción & Hostess** con la clave `bullbar2026`.
-2. **Para ver el menú como cliente (`index.html`):** Abre [index.html](file:///c:/Users/pauli/Downloads/menu%20interactivo%20bullbar/index.html) con doble clic.
-3. **Para ingresar al panel administrativo del menú (`admin.html`):** Abre [admin.html](file:///c:/Users/pauli/Downloads/menu%20interactivo%20bullbar/admin.html) e ingresa con `admin` / `bullbar2026`.
-
-## 🌐 Publicación Gratuita en Internet
-
-Puedes alojar la plataforma web completa de BullBar gratis en cualquiera de estas opciones:
-
-1. **Netlify Drop (30 segundos):** Arrastra la carpeta `menu interactivo bullbar` completa a [app.netlify.com/drop](https://app.netlify.com/drop).
-2. **Vercel:** Sube la carpeta a [vercel.com](https://vercel.com).
-3. **GitHub Pages:** Sube los archivos a un repositorio y activa GitHub Pages en la rama principal.
-
+© 2026 BULLMARKET. Todos los derechos reservados.
