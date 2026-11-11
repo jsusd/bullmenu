@@ -1,107 +1,65 @@
 /**
- * BULLMARKET - PLATAFORMA INTERACTIVA DE PEDIDOS & MENÚ
- * Catálogo completo, Carrito, Filtros por Categoría, Modal de Producto y Pedidos a WhatsApp
+ * BULLBAR SOCIAL LOUNGE - PLATAFORMA INTERACTIVA DE PEDIDOS
+ * Lógica de Catálogo, Carrito, Filtros y Enrutamiento a WhatsApp
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Carga reactiva de datos: LocalStorage primero, luego fallback a data.js
+  // Funciones para cargar configuración, categorías y productos dinámicos (LocalStorage o defaults)
   function getConfig() {
     try {
-      const saved = localStorage.getItem("bullmarket_config");
-      const cfg = saved ? JSON.parse(saved) : (typeof BULLMARKET_CONFIG !== "undefined" ? BULLMARKET_CONFIG : {});
-      if (typeof BULLMARKET_CONFIG !== "undefined") {
-        if (!cfg.tripAdvisorUrl) cfg.tripAdvisorUrl = BULLMARKET_CONFIG.tripAdvisorUrl;
-        if (!cfg.googleBusinessUrl || cfg.googleBusinessUrl.includes("maps.google.com/?q=")) {
-          cfg.googleBusinessUrl = BULLMARKET_CONFIG.googleBusinessUrl;
-          cfg.googleReviewUrl = BULLMARKET_CONFIG.googleReviewUrl;
-        }
-        if (!cfg.instagramUser || cfg.instagramUser === "bullmarketbrunch") {
-          cfg.instagramUser = BULLMARKET_CONFIG.instagramUser;
-          cfg.instagramUrl = BULLMARKET_CONFIG.instagramUrl;
-        }
-      }
-      return cfg;
+      const saved = localStorage.getItem("bullbar_config");
+      return saved ? JSON.parse(saved) : (typeof BULLBAR_CONFIG !== "undefined" ? BULLBAR_CONFIG : {});
     } catch (e) {
-      return typeof BULLMARKET_CONFIG !== "undefined" ? BULLMARKET_CONFIG : {};
+      return typeof BULLBAR_CONFIG !== "undefined" ? BULLBAR_CONFIG : {};
     }
   }
 
   function getCategories() {
     try {
-      const saved = localStorage.getItem("bullmarket_categories");
+      const saved = localStorage.getItem("bullbar_categories");
       return saved ? JSON.parse(saved) : (typeof CATEGORIES !== "undefined" ? CATEGORIES : []);
     } catch (e) {
       return typeof CATEGORIES !== "undefined" ? CATEGORIES : [];
     }
   }
 
-  function getDeletedIds() {
-    const baseRemoved = typeof BULLMARKET_REMOVED_IDS !== "undefined" && Array.isArray(BULLMARKET_REMOVED_IDS) ? BULLMARKET_REMOVED_IDS : [];
-    try {
-      const saved = localStorage.getItem("bullmarket_deleted_ids");
-      const parsed = saved ? JSON.parse(saved) : [];
-      return Array.from(new Set([...baseRemoved, ...(Array.isArray(parsed) ? parsed : [])]));
-    } catch (e) {
-      return [...baseRemoved];
-    }
-  }
-
   function getProducts() {
-    const deletedSet = new Set(getDeletedIds());
     try {
-      const saved = localStorage.getItem("bullmarket_products");
-      const list = saved ? JSON.parse(saved) : (typeof PRODUCTS !== "undefined" ? [...PRODUCTS] : []);
-      return list.filter(p => p && !deletedSet.has(p.id));
-    } catch (e) {
-      const fallback = typeof PRODUCTS !== "undefined" ? [...PRODUCTS] : [];
-      return fallback.filter(p => p && !deletedSet.has(p.id));
-    }
-  }
-
-  function openBullmarketIDB() {
-    return new Promise((resolve, reject) => {
-      if (!window.indexedDB) return reject(new Error("No IDB"));
-      const req = indexedDB.open("bullmarket_db", 1);
-      req.onupgradeneeded = (e) => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains("store")) {
-          db.createObjectStore("store");
+      const saved = localStorage.getItem("bullbar_products");
+      const rawList = saved ? JSON.parse(saved) : (typeof PRODUCTS !== "undefined" ? PRODUCTS : []);
+      if (!Array.isArray(rawList)) return [];
+      const result = [];
+      for (let i = 0; i < rawList.length; i++) {
+        const item = rawList[i];
+        if (!item || !item.name) continue;
+        const isAutoProdId = typeof item.id === "string" && item.id.indexOf("prod-") === 0;
+        const isExplicitCopy = item.name.indexOf("(Copia)") !== -1;
+        if (isAutoProdId && !isExplicitCopy) {
+          const otherMatch = rawList.find((other, idx) =>
+            idx !== i &&
+            other &&
+            other.name &&
+            other.name.trim().toLowerCase() === item.name.trim().toLowerCase() &&
+            other.categoryId === item.categoryId
+          );
+          if (otherMatch) {
+            otherMatch.price = item.price;
+            otherMatch.image = item.image;
+            otherMatch.description = item.description;
+            otherMatch.badge = item.badge;
+            otherMatch.available = item.available;
+            continue;
+          }
         }
-      };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
-    });
-  }
-
-  async function idbGet(key) {
-    try {
-      const db = await openBullmarketIDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction("store", "readonly");
-        const req = tx.objectStore("store").get(key);
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      });
+        result.push(item);
+      }
+      return result;
     } catch (e) {
-      return undefined;
+      return typeof PRODUCTS !== "undefined" ? PRODUCTS : [];
     }
   }
 
-  async function idbSet(key, val) {
-    try {
-      const db = await openBullmarketIDB();
-      return new Promise((resolve, reject) => {
-        const tx = db.transaction("store", "readwrite");
-        tx.objectStore("store").put(val, key);
-        tx.oncomplete = () => resolve(true);
-        tx.onerror = () => reject(tx.error);
-      });
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Estado global de la aplicación
+  // Estado de la aplicación
   let state = {
     activeCategory: "all",
     searchQuery: "",
@@ -114,37 +72,33 @@ document.addEventListener("DOMContentLoaded", () => {
     products: getProducts()
   };
 
-  // Referencias del DOM
-  const brandNameEl = document.getElementById("brandName");
-  const brandTaglineEl = document.getElementById("brandTagline");
-  const brandAddressEl = document.getElementById("brandAddress");
-  const brandAddressLinkEl = document.getElementById("brandAddressLink");
-  const brandLogoEl = document.getElementById("brandLogo");
-  const brandBannerEl = document.getElementById("brandBanner");
-  const statusBadgeEl = document.getElementById("statusBadge");
-  const instagramLinkEl = document.getElementById("instagramLink");
-  const googleMapsLinkEl = document.getElementById("googleMapsLink");
-  const tripAdvisorLinkEl = document.getElementById("tripAdvisorLink");
-  const directWaLinkEl = document.getElementById("directWaLink");
-  const footerInstagramLinkEl = document.getElementById("footerInstagramLink");
-  const footerGoogleMapsLinkEl = document.getElementById("footerGoogleMapsLink");
-  const footerTripAdvisorLinkEl = document.getElementById("footerTripAdvisorLink");
-  const footerWhatsappLinkEl = document.getElementById("footerWhatsappLink");
-
+  // Elementos del DOM
   const productsContainer = document.getElementById("productsContainer");
   const categoriesContainer = document.getElementById("categoriesContainer");
-  const productsCounterEl = document.getElementById("productsCounter");
   const searchInput = document.getElementById("searchInput");
   const searchClear = document.getElementById("searchClear");
-
   const floatingCartBtn = document.getElementById("floatingCartBtn");
   const cartBadge = document.getElementById("cartBadge");
   const cartBtnTotal = document.getElementById("cartBtnTotal");
+  const toastContainer = document.getElementById("toastContainer");
+
+  // Modales
+  const productModal = document.getElementById("productModal");
+  const closeProductModalBtn = document.getElementById("closeProductModal");
   const cartDrawerOverlay = document.getElementById("cartDrawerOverlay");
   const closeCartDrawerBtn = document.getElementById("closeCartDrawer");
   const cartItemsList = document.getElementById("cartItemsList");
   const clearCartBtn = document.getElementById("clearCartBtn");
 
+  // Lightbox de Imagen Completa
+  const imageLightboxModal = document.getElementById("imageLightboxModal");
+  const lightboxImg = document.getElementById("lightboxImg");
+  const lightboxTitle = document.getElementById("lightboxTitle");
+  const closeLightboxBtn = document.getElementById("closeLightboxBtn");
+  const modalImgWrap = document.getElementById("modalImgWrap");
+  const btnZoomModalImg = document.getElementById("btnZoomModalImg");
+
+  // Elementos de Checkout
   const subtotalAmountEl = document.getElementById("subtotalAmount");
   const totalAmountEl = document.getElementById("totalAmount");
   const clientNameInput = document.getElementById("clientName");
@@ -156,433 +110,421 @@ document.addEventListener("DOMContentLoaded", () => {
   const orderNotesInput = document.getElementById("orderNotes");
   const btnSendWhatsapp = document.getElementById("btnSendWhatsapp");
 
-  // Modal de Detalle
-  const productModal = document.getElementById("productModal");
-  const closeProductModalBtn = document.getElementById("closeProductModal");
-  const modalProductImg = document.getElementById("modalProductImg");
-  const btnPrevProductImg = document.getElementById("btnPrevProductImg");
-  const btnNextProductImg = document.getElementById("btnNextProductImg");
-  const modalGalleryDots = document.getElementById("modalGalleryDots");
-  const modalGalleryThumbsClient = document.getElementById("modalGalleryThumbsClient");
-  const modalProductBadge = document.getElementById("modalProductBadge");
-  const modalProductCategory = document.getElementById("modalProductCategory");
-  const modalProductTitle = document.getElementById("modalProductTitle");
-  const modalProductPrice = document.getElementById("modalProductPrice");
-  const modalProductDesc = document.getElementById("modalProductDesc");
-  const modalSpecialNotes = document.getElementById("modalSpecialNotes");
-  const modalQuantityDisplay = document.getElementById("modalQuantityDisplay");
-  const modalAddPrice = document.getElementById("modalAddPrice");
-  const btnDecreaseQty = document.getElementById("btnDecreaseQty");
-  const btnIncreaseQty = document.getElementById("btnIncreaseQty");
-  const btnAddToCartModal = document.getElementById("btnAddToCartModal");
-  const btnZoomModalImg = document.getElementById("btnZoomModalImg");
-
-  // Lightbox
-  const imageLightboxModal = document.getElementById("imageLightboxModal");
-  const lightboxImg = document.getElementById("lightboxImg");
-  const lightboxTitle = document.getElementById("lightboxTitle");
-  const closeLightboxBtn = document.getElementById("closeLightboxBtn");
-
-  const toastContainer = document.getElementById("toastContainer");
-
-  // Inicialización de la aplicación
-  initApp();
-
-  function refreshMenuFromStorage() {
-    state.config = getConfig();
-    state.categories = getCategories();
-    state.products = getProducts();
-    renderBrandHeader();
-    renderCategories();
-    renderProducts();
+  // --- SISTEMA DE MÉTRICAS & ANALÍTICA BULLBAR ---
+  function getLocalDateString(d = new Date()) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }
 
-  async function syncDataFromIDBAndCloud() {
+  function trackAnalytics(eventType, data = {}) {
     try {
-      const localUpdated = Number(localStorage.getItem("bullmarket_updated_at") || 0);
-      const idbSnap = await idbGet("bullmarket_snapshot");
-      if (idbSnap && Array.isArray(idbSnap.products) && (idbSnap.updatedAt || 0) >= localUpdated) {
-        const delSet = new Set(getDeletedIds());
-        state.products = idbSnap.products.filter(p => p && !delSet.has(p.id));
-        if (Array.isArray(idbSnap.categories) && idbSnap.categories.length > 0) state.categories = idbSnap.categories;
-        if (idbSnap.config) state.config = idbSnap.config;
-        renderBrandHeader();
-        renderCategories();
-        renderProducts();
-      } else {
-        const idbProds = await idbGet("bullmarket_products");
-        if (Array.isArray(idbProds) && idbProds.length > 0 && !localStorage.getItem("bullmarket_products")) {
-          const delSet = new Set(getDeletedIds());
-          state.products = idbProds.filter(p => p && !delSet.has(p.id));
-          renderCategories();
-          renderProducts();
-        }
+      let raw = localStorage.getItem("bullbar_analytics");
+      let analytics = raw ? JSON.parse(raw) : { visits: [], clicks: [], orders: [] };
+      if (!Array.isArray(analytics.visits)) analytics.visits = [];
+      if (!Array.isArray(analytics.clicks)) analytics.clicks = [];
+      if (!Array.isArray(analytics.orders)) analytics.orders = [];
+
+      const now = new Date();
+      const dateStr = getLocalDateString(now);
+      const timestamp = Date.now();
+
+      if (eventType === "visit") {
+        analytics.visits.push({
+          id: "vis_" + timestamp + "_" + Math.random().toString(36).substring(2, 6),
+          timestamp,
+          date: dateStr,
+          device: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? "Móvil" : "Desktop",
+          referrer: document.referrer || "Directo"
+        });
+        if (analytics.visits.length > 2500) analytics.visits = analytics.visits.slice(-2500);
+      } else if (eventType === "click") {
+        analytics.clicks.push({
+          id: "clk_" + timestamp + "_" + Math.random().toString(36).substring(2, 6),
+          timestamp,
+          date: dateStr,
+          ...data
+        });
+        if (analytics.clicks.length > 4000) analytics.clicks = analytics.clicks.slice(-4000);
+      } else if (eventType === "order") {
+        analytics.orders.push({
+          orderId: data.orderId || ("BB-" + Math.floor(100000 + Math.random() * 900000)),
+          timestamp,
+          date: dateStr,
+          time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+          ...data
+        });
+        if (analytics.orders.length > 1500) analytics.orders = analytics.orders.slice(-1500);
       }
 
-      const res = await fetch("/.netlify/functions/menu?t=" + Date.now(), { cache: "no-store" });
-      if (res.ok) {
-        const cloud = await res.json();
-        const currentUpdated = Math.max(localUpdated, (idbSnap && idbSnap.updatedAt) || 0);
-        if (cloud && Array.isArray(cloud.products) && (cloud.updatedAt || 0) > currentUpdated) {
-          if (Array.isArray(cloud.deletedIds)) {
-            localStorage.setItem("bullmarket_deleted_ids", JSON.stringify(cloud.deletedIds));
-          }
-          const delSet = new Set(getDeletedIds());
-          state.products = cloud.products.filter(p => p && !delSet.has(p.id));
-          if (Array.isArray(cloud.categories) && cloud.categories.length > 0) state.categories = cloud.categories;
-          if (cloud.config) state.config = cloud.config;
-          localStorage.setItem("bullmarket_updated_at", String(cloud.updatedAt));
-          try {
-            localStorage.setItem("bullmarket_products", JSON.stringify(state.products));
-          } catch (_) {}
-          await idbSet("bullmarket_snapshot", cloud);
-          renderBrandHeader();
-          renderCategories();
-          renderProducts();
-        }
-      }
-    } catch (e) {
-      // Silencioso en modo offline/estático
+      localStorage.setItem("bullbar_analytics", JSON.stringify(analytics));
+    } catch (err) {
+      console.warn("BullBar Analytics: no se pudo guardar evento", err);
     }
   }
 
+  function recordPageVisit() {
+    const lastVisitKey = "bullbar_last_visit_time";
+    const lastTime = sessionStorage.getItem(lastVisitKey);
+    const nowTime = Date.now();
+    if (!lastTime || (nowTime - parseInt(lastTime, 10)) > 10 * 60 * 1000) {
+      trackAnalytics("visit");
+      sessionStorage.setItem(lastVisitKey, nowTime.toString());
+    }
+  }
+
+  // Inicializar plataforma
+  initApp();
+
   function initApp() {
-    renderBrandHeader();
+    recordPageVisit();
+    renderBrandInfo();
     renderCategories();
     renderProducts();
     updateCartUI();
+    checkBusinessHours();
     setupEventListeners();
-    syncDataFromIDBAndCloud();
-
-    // Sincronizar automáticamente al regresar del panel admin (iPhone Safari bfcache, pestañas, foco)
-    window.addEventListener("pageshow", () => {
-      refreshMenuFromStorage();
-      syncDataFromIDBAndCloud();
-    });
-    window.addEventListener("focus", () => {
-      refreshMenuFromStorage();
-      syncDataFromIDBAndCloud();
-    });
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") {
-        refreshMenuFromStorage();
-        syncDataFromIDBAndCloud();
-      }
-    });
-    window.addEventListener("storage", () => {
-      refreshMenuFromStorage();
-      syncDataFromIDBAndCloud();
-    });
   }
 
-  // --- RENDERIZADO DE CABECERA Y NEGOCIO ---
-  function renderBrandHeader() {
+  // Cargar datos de la marca en el encabezado
+  function renderBrandInfo() {
     const cfg = state.config;
-    if (brandNameEl) brandNameEl.textContent = cfg.name || "BULLMARKET";
-    if (brandTaglineEl) brandTaglineEl.textContent = cfg.tagline || "Brunch, Bistro & Gourmet Burgers";
-    if (brandAddressEl) brandAddressEl.textContent = cfg.address || "Barquisimeto, Lara";
-    if (brandAddressLinkEl && cfg.googleBusinessUrl) brandAddressLinkEl.href = cfg.googleBusinessUrl;
-    if (brandBannerEl && cfg.bannerImage) brandBannerEl.src = cfg.bannerImage;
-    if (brandLogoEl && cfg.logoImage) {
-      brandLogoEl.src = cfg.logoImage;
-      brandLogoEl.onerror = () => {
-        brandLogoEl.src = cfg.logoImageFallback || "https://assets.olaclick.app/companies/logos/be35feb9-65e1-4d35-aff6-f2b8a2fa7fd2.png";
-      };
-    }
-    if (instagramLinkEl && cfg.instagramUrl) instagramLinkEl.href = cfg.instagramUrl;
-    if (googleMapsLinkEl && cfg.googleBusinessUrl) googleMapsLinkEl.href = cfg.googleBusinessUrl;
-    if (tripAdvisorLinkEl && cfg.tripAdvisorUrl) tripAdvisorLinkEl.href = cfg.tripAdvisorUrl;
-    if (directWaLinkEl && cfg.whatsappNumber) directWaLinkEl.href = `https://wa.me/${cfg.whatsappNumber}`;
+    document.getElementById("brandName").textContent = cfg.name || "BullBar";
+    document.getElementById("brandTagline").textContent = cfg.tagline || "Tu Social Lounge Favorito";
+    document.getElementById("brandAddress").textContent = cfg.address || "BullBar Social - Barquisimeto, Lara, Venezuela";
+    if (cfg.logoImage) document.getElementById("brandLogo").src = cfg.logoImage;
+    if (cfg.bannerImage) document.getElementById("brandBanner").src = cfg.bannerImage;
 
-    if (footerInstagramLinkEl) {
-      footerInstagramLinkEl.href = cfg.instagramUrl || "https://www.instagram.com/bullmarket_bqto/";
-      footerInstagramLinkEl.textContent = "@" + (cfg.instagramUser || "bullmarket_bqto");
-    }
-    if (footerGoogleMapsLinkEl && cfg.googleBusinessUrl) footerGoogleMapsLinkEl.href = cfg.googleBusinessUrl;
-    if (footerTripAdvisorLinkEl && cfg.tripAdvisorUrl) footerTripAdvisorLinkEl.href = cfg.tripAdvisorUrl;
-    if (footerWhatsappLinkEl && cfg.whatsappNumber) {
-      footerWhatsappLinkEl.href = `https://wa.me/${cfg.whatsappNumber}`;
-      footerWhatsappLinkEl.textContent = `+${cfg.whatsappNumber.slice(0, 2)} ${cfg.whatsappNumber.slice(2, 5)} ${cfg.whatsappNumber.slice(5, 8)} ${cfg.whatsappNumber.slice(8)}`;
-    }
+    const instagramLink = document.getElementById("instagramLink");
+    if (instagramLink) instagramLink.href = cfg.instagramUrl || "https://www.instagram.com/bullbar_bqto";
 
-    // Estado Abierto / Cerrado
-    if (statusBadgeEl) {
-      const isClosed = cfg.forceStatus === "closed";
-      statusBadgeEl.textContent = isClosed ? "Cerrado" : "Abierto";
-      statusBadgeEl.className = `badge-status ${isClosed ? 'closed' : 'open'}`;
+    const googleLink = document.getElementById("googleLink");
+    if (googleLink && cfg.googleBusinessUrl) googleLink.href = cfg.googleBusinessUrl;
+
+    const brandAddressLink = document.getElementById("brandAddressLink");
+    if (brandAddressLink && cfg.googleBusinessUrl) brandAddressLink.href = cfg.googleBusinessUrl;
+
+    const footerGoogleLink = document.getElementById("footerGoogleLink");
+    if (footerGoogleLink && cfg.googleBusinessUrl) footerGoogleLink.href = cfg.googleBusinessUrl;
+
+    const directWaLink = document.getElementById("directWaLink");
+    if (directWaLink) {
+      directWaLink.href = `https://wa.me/${cfg.whatsappNumber || "584228888356"}?text=${encodeURIComponent("¡Hola BullBar! Quisiera consultar información sobre su menú y reservas.")}`;
     }
   }
 
-  // --- RENDERIZADO DE CATEGORÍAS ---
-  function renderCategories() {
-    if (!categoriesContainer) return;
-    categoriesContainer.innerHTML = "";
+  // Verificar si el local está abierto (Hora de Barquisimeto UTC-4 o Forzado)
+  function checkBusinessHours() {
+    const statusBadge = document.getElementById("statusBadge");
+    if (!statusBadge) return;
 
-    const availableProducts = state.products.filter(p => p.available !== false);
+    if (state.config.forceStatus === "closed") {
+      statusBadge.textContent = "Cerrado Temporalmente";
+      statusBadge.className = "badge-status closed";
+      return;
+    }
+    if (state.config.forceStatus === "open") {
+      statusBadge.textContent = "Abierto Ahora";
+      statusBadge.className = "badge-status";
+      return;
+    }
 
-    state.categories.forEach(cat => {
-      const pill = document.createElement("button");
-      pill.type = "button";
-      pill.className = `category-pill ${state.activeCategory === cat.id ? "active" : ""}`;
-      pill.dataset.category = cat.id;
-
-      // Calcular conteo
-      let count = 0;
-      if (cat.id === "all") {
-        count = availableProducts.length;
+    try {
+      const now = new Date();
+      // Ajuste de zona horaria de Venezuela (UTC-4)
+      const options = { timeZone: "America/Caracas", hour: "numeric", minute: "numeric", hour12: false };
+      const formatter = new Intl.DateTimeFormat([], options);
+      const parts = formatter.formatToParts(now);
+      const hours = parseInt(parts.find(p => p.type === "hour").value, 10);
+      
+      // BullBar abre usualmente a partir de las 2:00 PM (14:00) hasta tarde
+      const isOpen = (hours >= 14 || hours < 2);
+      if (isOpen) {
+        statusBadge.textContent = "Abierto Ahora";
+        statusBadge.className = "badge-status";
       } else {
-        count = availableProducts.filter(p => p.categoryId === cat.id).length;
+        statusBadge.textContent = "Cerrado (Abre a las 2:00 PM)";
+        statusBadge.className = "badge-status closed";
       }
+    } catch (e) {
+      statusBadge.textContent = "Abierto";
+      statusBadge.className = "badge-status";
+    }
+  }
 
-      pill.innerHTML = `
+  // Renderizar filtros de categorías
+  function renderCategories() {
+    categoriesContainer.innerHTML = "";
+    state.categories.forEach(cat => {
+      // Contar items por categoría
+      const count = cat.id === "all" 
+        ? state.products.length 
+        : state.products.filter(p => p.categoryId === cat.id).length;
+
+      if (count === 0 && cat.id !== "all") return;
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `category-chip ${state.activeCategory === cat.id ? "active" : ""}`;
+      btn.innerHTML = `
         <span>${cat.name}</span>
-        <span class="pill-badge">${count}</span>
+        <span class="chip-count">${count}</span>
       `;
-
-      pill.addEventListener("click", () => {
+      btn.addEventListener("click", () => {
+        trackAnalytics("click", {
+          action: "category_click",
+          categoryId: cat.id,
+          categoryName: cat.name
+        });
         state.activeCategory = cat.id;
-        document.querySelectorAll(".category-pill").forEach(el => el.classList.remove("active"));
-        pill.classList.add("active");
+        state.searchQuery = "";
+        searchInput.value = "";
+        searchClear.style.display = "none";
+        renderCategories();
         renderProducts();
         
-        // Centrar botón activo en el scroll horizontal
-        pill.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+        // Scroll suave hacia los productos
+        const topControls = document.querySelector(".sticky-controls");
+        if (topControls) {
+          const y = topControls.getBoundingClientRect().top + window.pageYOffset - 10;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        }
       });
-
-      categoriesContainer.appendChild(pill);
+      categoriesContainer.appendChild(btn);
     });
   }
 
-  // --- RENDERIZADO DEL CATÁLOGO DE PRODUCTOS ---
+  // Filtrar y renderizar productos
   function renderProducts() {
-    if (!productsContainer) return;
     productsContainer.innerHTML = "";
 
-    const query = state.searchQuery.toLowerCase().trim();
-    let filtered = state.products.filter(p => p.available !== false);
+    let filtered = state.products.filter(p => p.available);
 
-    // Filtro por búsqueda
-    if (query) {
-      filtered = filtered.filter(p => {
-        const nameMatch = p.name && p.name.toLowerCase().includes(query);
-        const descMatch = p.description && p.description.toLowerCase().includes(query);
-        const catMatch = p.categoryName && p.categoryName.toLowerCase().includes(query);
-        return nameMatch || descMatch || catMatch;
-      });
-    } else if (state.activeCategory !== "all") {
+    // Filtro por categoría
+    if (state.activeCategory !== "all") {
       filtered = filtered.filter(p => p.categoryId === state.activeCategory);
     }
 
-    // Actualizar contador
-    if (productsCounterEl) {
-      if (query) {
-        productsCounterEl.textContent = `Resultados para "${state.searchQuery}": ${filtered.length} plato(s)`;
-      } else if (state.activeCategory !== "all") {
-        const currentCat = state.categories.find(c => c.id === state.activeCategory);
-        productsCounterEl.textContent = `${currentCat ? currentCat.name : 'Categoría'}: ${filtered.length} opciones`;
-      } else {
-        productsCounterEl.textContent = `Menú Completo: ${filtered.length} delicias disponibles`;
-      }
+    // Filtro por búsqueda
+    if (state.searchQuery.trim() !== "") {
+      const q = state.searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(q) || 
+        (p.description && p.description.toLowerCase().includes(q)) ||
+        (p.categoryName && p.categoryName.toLowerCase().includes(q))
+      );
     }
 
     if (filtered.length === 0) {
       productsContainer.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-dim);">
-          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin-bottom: 12px; opacity: 0.6;">
+        <div class="no-results">
+          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="8"></circle>
             <path d="m21 21-4.3-4.3"></path>
           </svg>
-          <h3 style="color: #fff; font-size: 1.2rem; margin-bottom: 6px;">No se encontraron productos</h3>
-          <p>Prueba buscando con otra palabra o selecciona otra categoría.</p>
+          <h3>No encontramos productos</h3>
+          <p>Intenta buscando con otra palabra o selecciona otra categoría.</p>
         </div>
       `;
       return;
     }
 
-    // Renderizar tarjetas
-    filtered.forEach(product => {
-      const card = document.createElement("article");
-      card.className = "product-card";
-      card.dataset.id = product.id;
-
-      const cartItem = state.cart.find(item => item.id === product.id);
-      const inCartQty = cartItem ? cartItem.quantity : 0;
-
-      card.innerHTML = `
-        <div class="card-img-wrap" data-action="detail">
-          <img src="${product.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'">
-          ${product.badge ? `<span class="card-badge">${escapeHtml(product.badge)}</span>` : ""}
-        </div>
-        <div class="card-body">
-          <span class="card-category">${escapeHtml(product.categoryName || "")}</span>
-          <h3 class="card-title" data-action="detail">${escapeHtml(product.name)}</h3>
-          <p class="card-desc">${escapeHtml(product.description || "Deliciosa especialidad de BULLMARKET preparada con ingredientes frescos.")}</p>
-          <div class="card-footer">
-            <div class="card-price">
-              <span class="currency">$</span>${product.price.toFixed(2)}
-            </div>
-            <div class="card-action-slot">
-              ${inCartQty > 0 ? `
-                <div class="card-qty-control">
-                  <button type="button" class="btn-card-qty" data-action="card-decrease" data-id="${product.id}">-</button>
-                  <span class="card-qty-num">${inCartQty}</span>
-                  <button type="button" class="btn-card-qty" data-action="card-increase" data-id="${product.id}">+</button>
-                </div>
-              ` : `
-                <button type="button" class="btn-add-card" data-action="card-add" data-id="${product.id}">
-                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                  </svg>
-                  <span>Pedir</span>
-                </button>
-              `}
-            </div>
-          </div>
-        </div>
-      `;
-
-      // Eventos de la tarjeta
-      card.addEventListener("click", (e) => {
-        const target = e.target.closest("[data-action]");
-        if (!target) return;
-        const action = target.dataset.action;
-
-        if (action === "detail") {
-          openProductModal(product);
-        } else if (action === "card-add") {
-          addToCart(product, 1);
-        } else if (action === "card-increase") {
-          updateCartItemQuantity(product.id, inCartQty + 1);
-        } else if (action === "card-decrease") {
-          updateCartItemQuantity(product.id, inCartQty - 1);
+    // Si estamos en "Todos" y sin búsqueda, organizamos con encabezados de categoría
+    if (state.activeCategory === "all" && state.searchQuery.trim() === "") {
+      const grouped = {};
+      state.categories.forEach(cat => {
+        if (cat.id === "all") return;
+        const items = filtered.filter(p => p.categoryId === cat.id);
+        if (items.length > 0) {
+          grouped[cat.id] = { category: cat, items };
         }
       });
 
-      productsContainer.appendChild(card);
-    });
+      Object.values(grouped).forEach(group => {
+        const sectionHeader = document.createElement("div");
+        sectionHeader.className = "category-section-header";
+        sectionHeader.innerHTML = `
+          <h2 class="category-section-title">
+            ${group.category.name}
+            ${group.category.badge ? `<span class="category-section-badge">${group.category.badge}</span>` : ""}
+          </h2>
+          <span class="category-section-count">${group.items.length} opciones</span>
+        `;
+        productsContainer.appendChild(sectionHeader);
+
+        const grid = document.createElement("div");
+        grid.className = "products-grid";
+        group.items.forEach(product => {
+          grid.appendChild(createProductCard(product));
+        });
+        productsContainer.appendChild(grid);
+      });
+    } else {
+      // Vista filtrada directa
+      const grid = document.createElement("div");
+      grid.className = "products-grid";
+      filtered.forEach(product => {
+        grid.appendChild(createProductCard(product));
+      });
+      productsContainer.appendChild(grid);
+    }
   }
 
-  // --- MODAL DETALLE DE PRODUCTO ---
-  let clientModalImages = [];
-  let clientActiveImageIndex = 0;
+  // Generador de Tarjeta de Producto
+  function createProductCard(product) {
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <div class="product-img-wrap">
+        <img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=600&q=80'">
+        ${product.badge ? `<span class="product-badge-overlay">${product.badge}</span>` : ""}
+      </div>
+      <div class="product-card-body">
+        <span class="product-category-sub">${product.categoryName}</span>
+        <h3 class="product-title">${product.name}</h3>
+        <p class="product-desc">${product.description || "Deliciosa opción preparada con la más alta calidad en BullBar."}</p>
+        <div class="product-card-footer">
+          <div class="product-price-box">
+            <span class="product-price-label">Precio</span>
+            <span class="product-price">$${product.price.toFixed(2)}</span>
+          </div>
+          <div class="card-action-btns">
+            <span class="card-view-btn" title="Ver descripción y detalles">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>Ver más</span>
+            </span>
+            <button type="button" class="btn-add-quick" title="Añadir directo al pedido">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
 
+    // Click en botón rápido "+"
+    const addQuickBtn = card.querySelector(".btn-add-quick");
+    addQuickBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      addToCart(product, 1, "");
+      trackAnalytics("click", {
+        action: "quick_add",
+        productId: product.id,
+        productName: product.name,
+        categoryName: product.categoryName,
+        price: product.price
+      });
+      showToast(`¡${product.name} agregado!`);
+    });
+
+    // Click en la tarjeta abre el modal de detalle completo
+    card.addEventListener("click", () => {
+      trackAnalytics("click", {
+        action: "view_product",
+        productId: product.id,
+        productName: product.name,
+        categoryName: product.categoryName,
+        price: product.price
+      });
+      openProductModal(product);
+    });
+
+    return card;
+  }
+
+  // Modal de Detalle de Producto
   function openProductModal(product) {
+    if (!product) return;
     state.currentModalProduct = product;
     state.modalQuantity = 1;
 
-    // Cargar fotos del plato (múltiples o individual)
-    if (Array.isArray(product.images) && product.images.length > 0) {
-      clientModalImages = [...product.images];
-    } else if (product.image) {
-      clientModalImages = [product.image];
-    } else {
-      clientModalImages = ["https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80"];
-    }
-    clientActiveImageIndex = 0;
-    renderClientModalGallery();
-
-    modalProductCategory.textContent = product.categoryName || "";
-    modalProductTitle.textContent = product.name;
-    modalProductPrice.textContent = `$${product.price.toFixed(2)}`;
-    modalProductDesc.textContent = product.description || "Preparación fresca y artesanal bajo los más altos estándares gastronómicos de BULLMARKET.";
-    modalSpecialNotes.value = "";
-
-    if (product.badge) {
-      modalProductBadge.textContent = product.badge;
-      modalProductBadge.classList.add("active");
-    } else {
-      modalProductBadge.classList.remove("active");
+    const imgEl = document.getElementById("modalProductImg");
+    if (imgEl) {
+      imgEl.src = product.image;
+      imgEl.alt = product.name;
     }
 
-    updateModalTotal();
-    productModal.classList.add("active");
-    document.body.style.overflow = "hidden";
-  }
+    const catEl = document.getElementById("modalProductCategory");
+    if (catEl) catEl.textContent = product.categoryName || "BULLBAR";
 
-  function renderClientModalGallery() {
-    if (!clientModalImages || clientModalImages.length === 0) return;
-    if (clientActiveImageIndex >= clientModalImages.length) {
-      clientActiveImageIndex = 0;
+    const titleEl = document.getElementById("modalProductTitle");
+    if (titleEl) titleEl.textContent = product.name;
+
+    const descEl = document.getElementById("modalProductDesc");
+    if (descEl) {
+      descEl.textContent = product.description && product.description.trim() !== ""
+        ? product.description
+        : "Deliciosa opción preparada con la más alta calidad y sabor exclusivo en BullBar Social Lounge.";
     }
 
-    modalProductImg.src = clientModalImages[clientActiveImageIndex];
+    const priceEl = document.getElementById("modalProductPrice");
+    if (priceEl) priceEl.textContent = `$${product.price.toFixed(2)}`;
 
-    const hasMultiple = clientModalImages.length > 1;
+    const notesEl = document.getElementById("modalNotes");
+    if (notesEl) notesEl.value = "";
 
-    if (btnPrevProductImg) btnPrevProductImg.style.display = hasMultiple ? "flex" : "none";
-    if (btnNextProductImg) btnNextProductImg.style.display = hasMultiple ? "flex" : "none";
+    const qtyDisplay = document.getElementById("modalQuantityDisplay");
+    if (qtyDisplay) qtyDisplay.textContent = "1";
 
-    if (modalGalleryDots) {
-      modalGalleryDots.style.display = hasMultiple ? "flex" : "none";
-      modalGalleryDots.innerHTML = clientModalImages.map((_, i) =>
-        `<span class="gallery-dot ${i === clientActiveImageIndex ? 'active' : ''}" data-idx="${i}"></span>`
-      ).join("");
-    }
+    updateModalTotalPrice();
 
-    if (modalGalleryThumbsClient) {
-      modalGalleryThumbsClient.style.display = hasMultiple ? "flex" : "none";
-      modalGalleryThumbsClient.innerHTML = "";
-      if (hasMultiple) {
-        clientModalImages.forEach((url, i) => {
-          const thumb = document.createElement("div");
-          thumb.className = `client-thumb-item ${i === clientActiveImageIndex ? 'active' : ''}`;
-          thumb.innerHTML = `<img src="${escapeHtml(url)}" alt="Foto ${i+1}">`;
-          thumb.addEventListener("click", () => {
-            clientActiveImageIndex = i;
-            renderClientModalGallery();
-          });
-          modalGalleryThumbsClient.appendChild(thumb);
-        });
-      }
+    if (productModal) {
+      productModal.classList.add("active");
+      document.body.style.overflow = "hidden";
     }
   }
 
   function closeProductModal() {
-    productModal.classList.remove("active");
+    if (productModal) {
+      productModal.classList.remove("active");
+      document.body.style.overflow = "";
+    }
     state.currentModalProduct = null;
-    document.body.style.overflow = "";
   }
 
-  function updateModalTotal() {
+  // Lightbox de Imagen en Pantalla Completa
+  function openImageLightbox(imageUrl, title) {
+    if (!imageUrl) return;
+    trackAnalytics("click", {
+      action: "zoom_image",
+      productTitle: title || "Foto de Producto"
+    });
+    if (lightboxImg) lightboxImg.src = imageUrl;
+    if (lightboxTitle) lightboxTitle.textContent = title || "BullBar Social Lounge";
+    if (imageLightboxModal) {
+      imageLightboxModal.classList.add("active");
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  function closeImageLightbox() {
+    if (imageLightboxModal) {
+      imageLightboxModal.classList.remove("active");
+      // Si el modal de producto sigue abierto, mantener el scroll bloqueado; si no, restaurar
+      if (!productModal || !productModal.classList.contains("active")) {
+        document.body.style.overflow = "";
+      }
+    }
+  }
+
+  function updateModalTotalPrice() {
     if (!state.currentModalProduct) return;
-    modalQuantityDisplay.textContent = state.modalQuantity;
     const total = state.currentModalProduct.price * state.modalQuantity;
-    modalAddPrice.textContent = `$${total.toFixed(2)}`;
+    document.getElementById("modalAddPrice").textContent = `$${total.toFixed(2)}`;
   }
 
-  // --- LIGHTBOX DE IMAGEN ---
-  function openLightbox(imgSrc, title) {
-    lightboxImg.src = imgSrc;
-    lightboxTitle.textContent = title;
-    imageLightboxModal.classList.add("active");
-  }
+  // Carrito de compras
+  function addToCart(product, quantity = 1, note = "") {
+    // Buscar si ya existe el mismo producto con la misma nota
+    const existingIndex = state.cart.findIndex(item => item.id === product.id && item.note === note);
 
-  function closeLightbox() {
-    imageLightboxModal.classList.remove("active");
-  }
-
-  // --- CARRITO DE COMPRAS & STORAGE ---
-  function loadCartFromStorage() {
-    try {
-      const saved = localStorage.getItem("bullmarket_cart");
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  function saveCartToStorage() {
-    try {
-      localStorage.setItem("bullmarket_cart", JSON.stringify(state.cart));
-    } catch (e) {
-      console.warn("Error guardando carrito", e);
-    }
-  }
-
-  function addToCart(product, quantity = 1, notes = "") {
-    const existingIndex = state.cart.findIndex(i => i.id === product.id && i.notes === notes);
-    if (existingIndex >= 0) {
+    if (existingIndex > -1) {
       state.cart[existingIndex].quantity += quantity;
     } else {
       state.cart.push({
@@ -592,48 +534,38 @@ document.addEventListener("DOMContentLoaded", () => {
         image: product.image,
         categoryName: product.categoryName,
         quantity: quantity,
-        notes: notes
+        note: note
       });
     }
 
     saveCartToStorage();
     updateCartUI();
-    renderProducts();
-    showToast(`"${product.name}" agregado a tu orden`);
   }
 
-  function updateCartItemQuantity(productId, newQty, notes = null) {
-    const itemIndex = state.cart.findIndex(i => i.id === productId && (notes === null || i.notes === notes));
-    if (itemIndex >= 0) {
-      if (newQty <= 0) {
-        state.cart.splice(itemIndex, 1);
-      } else {
-        state.cart[itemIndex].quantity = newQty;
+  function updateCartQuantity(index, delta) {
+    if (state.cart[index]) {
+      state.cart[index].quantity += delta;
+      if (state.cart[index].quantity <= 0) {
+        state.cart.splice(index, 1);
       }
+      saveCartToStorage();
+      updateCartUI();
     }
-    saveCartToStorage();
-    updateCartUI();
-    renderProducts();
   }
 
   function removeCartItem(index) {
     if (state.cart[index]) {
-      const removed = state.cart.splice(index, 1);
+      state.cart.splice(index, 1);
       saveCartToStorage();
       updateCartUI();
-      renderProducts();
-      showToast(`Eliminado de la orden`);
     }
   }
 
   function clearCart() {
-    if (state.cart.length === 0) return;
-    if (confirm("¿Deseas vaciar todos los productos del carrito?")) {
+    if (confirm("¿Estás seguro de que deseas vaciar tu carrito?")) {
       state.cart = [];
       saveCartToStorage();
       updateCartUI();
-      renderProducts();
-      showToast("Carrito vaciado");
     }
   }
 
@@ -642,26 +574,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalPrice = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     // Botón flotante
-    if (floatingCartBtn) {
-      if (totalItems > 0) {
-        floatingCartBtn.style.display = "flex";
-        cartBadge.textContent = totalItems;
-        cartBtnTotal.textContent = `$${totalPrice.toFixed(2)}`;
-      } else {
-        floatingCartBtn.style.display = "none";
-      }
+    if (totalItems > 0) {
+      floatingCartBtn.classList.remove("empty");
+      cartBadge.textContent = totalItems;
+      cartBtnTotal.textContent = `$${totalPrice.toFixed(2)}`;
+    } else {
+      floatingCartBtn.classList.add("empty");
     }
 
     // Totales en el Drawer
     if (subtotalAmountEl) subtotalAmountEl.textContent = `$${totalPrice.toFixed(2)}`;
     if (totalAmountEl) totalAmountEl.textContent = `$${totalPrice.toFixed(2)}`;
 
-    // Lista del Drawer
-    renderCartDrawerList();
+    // Renderizar items dentro del Drawer
+    renderCartDrawerItems();
   }
 
-  function renderCartDrawerList() {
-    if (!cartItemsList) return;
+  function renderCartDrawerItems() {
     cartItemsList.innerHTML = "";
 
     if (state.cart.length === 0) {
@@ -672,7 +601,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <path d="M16 10a4 4 0 0 1-8 0"></path>
           </svg>
-          <p>Tu orden está vacía.<br>Agrega hamburguesas, brunch o postres para comenzar.</p>
+          <h4>Tu carrito está vacío</h4>
+          <p>Explora el menú y agrega tus cócteles, tapas o cervezas favoritas.</p>
         </div>
       `;
       return;
@@ -682,435 +612,340 @@ document.addEventListener("DOMContentLoaded", () => {
       const itemEl = document.createElement("div");
       itemEl.className = "cart-item";
       itemEl.innerHTML = `
-        <div class="cart-item-img">
-          <img src="${item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}" alt="${escapeHtml(item.name)}">
-        </div>
-        <div class="cart-item-details">
-          <div class="cart-item-title">${escapeHtml(item.name)}</div>
-          ${item.notes ? `<div class="cart-item-notes">Nota: ${escapeHtml(item.notes)}</div>` : ""}
-          <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)} ($${item.price.toFixed(2)} c/u)</div>
+        <img class="cart-item-img" src="${item.image}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=600&q=80'">
+        <div class="cart-item-info">
+          <div class="cart-item-title">${item.name}</div>
+          ${item.note ? `<div class="cart-item-note">"${item.note}"</div>` : ""}
+          <div class="cart-item-price">$${item.price.toFixed(2)} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}</div>
         </div>
         <div class="cart-item-actions">
-          <div class="card-qty-control" style="padding: 2px 4px;">
-            <button type="button" class="btn-card-qty" data-cart-dec="${index}" style="width: 22px; height: 22px; font-size: 0.8rem;">-</button>
-            <span class="card-qty-num" style="font-size: 0.82rem; min-width: 16px;">${item.quantity}</span>
-            <button type="button" class="btn-card-qty" data-cart-inc="${index}" style="width: 22px; height: 22px; font-size: 0.8rem;">+</button>
-          </div>
-          <button type="button" class="btn-cart-remove" data-cart-del="${index}" title="Eliminar">
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <button type="button" class="cart-qty-btn btn-qty-minus">-</button>
+          <span class="cart-qty-num">${item.quantity}</span>
+          <button type="button" class="cart-qty-btn btn-qty-plus">+</button>
+          <button type="button" class="btn-remove-item" title="Eliminar">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M18 6L6 18M6 6l12 12"></path>
             </svg>
           </button>
         </div>
       `;
 
-      itemEl.querySelector("[data-cart-dec]").addEventListener("click", () => {
-        updateCartItemQuantity(item.id, item.quantity - 1, item.notes);
-      });
-      itemEl.querySelector("[data-cart-inc]").addEventListener("click", () => {
-        updateCartItemQuantity(item.id, item.quantity + 1, item.notes);
-      });
-      itemEl.querySelector("[data-cart-del]").addEventListener("click", () => {
-        removeCartItem(index);
-      });
+      itemEl.querySelector(".btn-qty-minus").addEventListener("click", () => updateCartQuantity(index, -1));
+      itemEl.querySelector(".btn-qty-plus").addEventListener("click", () => updateCartQuantity(index, 1));
+      itemEl.querySelector(".btn-remove-item").addEventListener("click", () => removeCartItem(index));
 
       cartItemsList.appendChild(itemEl);
     });
   }
 
-  // --- ENRUTAMIENTO DE PEDIDOS A WHATSAPP ---
-  function sendOrderToWhatsApp() {
+  // Cambio de método de entrega / consumo
+  function handleServiceTypeChange(type) {
+    state.serviceType = type;
+    document.querySelectorAll(".service-type-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.type === type);
+    });
+
+    if (type === "onsite") {
+      locationFieldGroup.style.display = "flex";
+      locationLabel.textContent = "Número de Mesa o Ubicación en Local *";
+      locationInput.placeholder = "Ej: Mesa 8, Terraza, Barra alta...";
+      locationInput.required = true;
+    } else if (type === "delivery") {
+      locationFieldGroup.style.display = "flex";
+      locationLabel.textContent = "Dirección de Entrega y Punto de Referencia *";
+      locationInput.placeholder = "Ej: Urb. del Este, Calle 4, Edif. Los Samanes apto 2B...";
+      locationInput.required = true;
+    } else {
+      // Pick up
+      locationFieldGroup.style.display = "none";
+      locationInput.required = false;
+    }
+  }
+
+  // Generador y envío de Pedido por WhatsApp
+  function submitOrderToWhatsApp() {
     if (state.cart.length === 0) {
-      alert("Por favor agrega productos a la orden antes de continuar.");
+      alert("Por favor agrega al menos un producto a tu carrito.");
       return;
     }
 
     const clientName = clientNameInput.value.trim();
     if (!clientName) {
-      alert("Por favor ingresa tu nombre y apellido para identificar el pedido.");
+      alert("Por favor ingresa tu nombre para identificar el pedido.");
       clientNameInput.focus();
       return;
     }
 
-    const locationVal = locationInput.value.trim();
-    if (!locationVal) {
-      const msg = state.serviceType === "onsite" ? "Por favor indica tu número de mesa o ubicación." :
-                  state.serviceType === "delivery" ? "Por favor escribe tu dirección exacta de entrega." :
-                  "Por favor indica tu nombre o detalle de retiro.";
-      alert(msg);
+    let locationDetails = locationInput.value.trim();
+    if (state.serviceType !== "pickup" && !locationDetails) {
+      alert(state.serviceType === "onsite" ? "Por favor especifica tu número de mesa o ubicación." : "Por favor especifica tu dirección de entrega.");
       locationInput.focus();
       return;
     }
 
-    const phoneVal = clientPhoneInput.value.trim();
-    const notesVal = orderNotesInput.value.trim();
-    const paymentVal = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
-    const targetWaNumber = state.config.whatsappNumber || "584128642855";
-
-    // Formatear Mensaje Profesional para WhatsApp
-    let serviceLabel = "En Mesa / Salón";
-    let locationTitle = "Mesa / Ubicación:";
-    if (state.serviceType === "pickup") {
-      serviceLabel = "Para Retirar (Pick Up)";
-      locationTitle = "Retira:";
-    } else if (state.serviceType === "delivery") {
-      serviceLabel = "Delivery a Domicilio";
-      locationTitle = "Dirección de Entrega:";
-    }
-
-    const orderId = "BM-" + Math.floor(100000 + Math.random() * 900000);
+    const clientPhone = clientPhoneInput.value.trim();
+    const paymentMethodText = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
+    const additionalNotes = orderNotesInput.value.trim();
     const totalPrice = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-    let text = `👋 *¡Hola BULLMARKET! Deseo realizar el siguiente pedido:*\n\n`;
-    text += `📋 *ORDEN:* #${orderId}\n`;
-    text += `👤 *Cliente:* ${clientName}\n`;
-    if (phoneVal) text += `📱 *Teléfono:* ${phoneVal}\n`;
-    text += `🍽️ *Modalidad:* ${serviceLabel}\n`;
-    text += `📍 *${locationTitle}* ${locationVal}\n`;
-    text += `💳 *Método de Pago:* ${paymentVal}\n\n`;
+    let modalLabel = "Consumo en Local (Mesa)";
+    if (state.serviceType === "pickup") modalLabel = "Para Retirar (Pick-Up)";
+    if (state.serviceType === "delivery") modalLabel = "Delivery a Domicilio";
 
-    text += `🛒 *DETALLE DEL PEDIDO:*\n`;
-    text += `--------------------------------\n`;
+    // Formatear texto para WhatsApp con diseño limpio y profesional
+    let message = `🍹 *¡HOLA BULLBAR! QUIERO HACER UN PEDIDO* 🍹\n`;
+    message += `─────────────────────────\n`;
+    message += `👤 *Cliente:* ${clientName}\n`;
+    if (clientPhone) message += `📞 *Teléfono:* ${clientPhone}\n`;
+    message += `📍 *Modalidad:* ${modalLabel}\n`;
+    if (state.serviceType !== "pickup") {
+      message += `📌 *${state.serviceType === 'onsite' ? 'Mesa / Ubicación' : 'Dirección'}:* ${locationDetails}\n`;
+    }
+    message += `💳 *Método de Pago:* ${paymentMethodText}\n`;
+    message += `─────────────────────────\n\n`;
+    message += `🛒 *DETALLE DEL PEDIDO:*\n`;
 
     state.cart.forEach((item, i) => {
-      text += `*${item.quantity}x* ${item.name} — $${(item.price * item.quantity).toFixed(2)}\n`;
-      if (item.notes) {
-        text += `   📝 _Nota: ${item.notes}_\n`;
+      message += `▫️ *${item.quantity}x* ${item.name} ($${item.price.toFixed(2)} c/u) = *$${(item.price * item.quantity).toFixed(2)}*\n`;
+      if (item.note) {
+        message += `   ↳ _Nota: ${item.note}_\n`;
       }
     });
 
-    text += `--------------------------------\n`;
-    text += `💰 *TOTAL A PAGAR: $${totalPrice.toFixed(2)} USD*\n\n`;
+    message += `\n─────────────────────────\n`;
+    message += `💰 *TOTAL A PAGAR: $${totalPrice.toFixed(2)} USD*\n`;
+    message += `─────────────────────────\n`;
 
-    if (notesVal) {
-      text += `👨‍🍳 *Observaciones Cocina:* ${notesVal}\n\n`;
+    if (additionalNotes) {
+      message += `📝 *Comentarios adicionales:* ${additionalNotes}\n\n`;
     }
 
-    text += `_Pedido generado desde el Menú Digital Oficial BULLMARKET_ 🌟`;
+    message += `✨ _Enviado desde el Menú Digital Oficial de BullBar_`;
 
-    const encoded = encodeURIComponent(text);
-    const waUrl = `https://wa.me/${targetWaNumber}?text=${encoded}`;
+    // Registrar pedido concretado en analítica
+    const orderId = "BB-" + Math.floor(100000 + Math.random() * 900000);
+    const orderRecord = {
+      orderId: orderId,
+      clientName: clientName,
+      clientPhone: clientPhone || "No especificado",
+      serviceType: state.serviceType,
+      serviceLabel: modalLabel,
+      location: state.serviceType !== "pickup" ? locationDetails : "Para Retirar en Barra",
+      paymentMethod: paymentMethodText,
+      items: state.cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        categoryName: item.categoryName || "",
+        price: item.price,
+        quantity: item.quantity,
+        note: item.note || "",
+        subtotal: parseFloat((item.price * item.quantity).toFixed(2))
+      })),
+      itemCount: state.cart.reduce((sum, item) => sum + item.quantity, 0),
+      total: parseFloat(totalPrice.toFixed(2)),
+      notes: additionalNotes || "",
+      status: "completed"
+    };
+    trackAnalytics("order", orderRecord);
 
-    // Abrir WhatsApp
+    // Abrir enlace oficial de WhatsApp
+    const encodedMsg = encodeURIComponent(message);
+    const targetPhone = state.config.whatsappNumber || "584228888356";
+    const waUrl = `https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodedMsg}`;
+
     window.open(waUrl, "_blank");
 
-    // Limpiar carrito o guardar confirmación
-    showToast("¡Redirigiendo a WhatsApp de Bullmarket!");
+    // Limpiar carrito o mantener si el usuario desea
+    showToast("¡Pedido generado! Abriendo WhatsApp...");
+    setTimeout(() => {
+      cartDrawerOverlay.classList.remove("active");
+    }, 800);
   }
 
-  // --- NOTIFICACIONES TOAST ---
+  // Notificación tipo Toast
   function showToast(message) {
-    if (!toastContainer) return;
     const toast = document.createElement("div");
     toast.className = "toast";
     toast.innerHTML = `
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <polyline points="20 6 9 17 4 12"></polyline>
+        <path d="M20 6L9 17l-5-5"></path>
       </svg>
-      <span>${escapeHtml(message)}</span>
+      <span>${message}</span>
     `;
     toastContainer.appendChild(toast);
-
     setTimeout(() => {
-      toast.style.opacity = "0";
-      toast.style.transform = "translateX(50px)";
-      toast.style.transition = "all 0.3s ease";
-      setTimeout(() => toast.remove(), 300);
-    }, 2800);
+      toast.remove();
+    }, 3000);
   }
 
-  // --- EVENT LISTENERS ---
+  // Guardar y cargar carrito en LocalStorage
+  function saveCartToStorage() {
+    try {
+      localStorage.setItem("bullbar_cart", JSON.stringify(state.cart));
+    } catch (e) {}
+  }
+
+  function loadCartFromStorage() {
+    try {
+      const data = localStorage.getItem("bullbar_cart");
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Listeners de Eventos
   function setupEventListeners() {
+    // Sincronizar automáticamente si se edita el menú desde el panel administrativo en otra pestaña
+    window.addEventListener("storage", (e) => {
+      if (e.key === "bullbar_products" || e.key === "bullbar_categories" || e.key === "bullbar_config") {
+        state.config = getConfig();
+        state.categories = getCategories();
+        state.products = getProducts();
+        renderBrandInfo();
+        renderCategories();
+        renderProducts();
+        checkBusinessHours();
+      }
+    });
+
     // Buscador
-    if (searchInput) {
-      searchInput.addEventListener("input", (e) => {
-        state.searchQuery = e.target.value;
-        if (searchClear) searchClear.style.display = state.searchQuery ? "flex" : "none";
-        renderProducts();
-      });
-    }
+    searchInput.addEventListener("input", (e) => {
+      state.searchQuery = e.target.value;
+      searchClear.style.display = state.searchQuery ? "block" : "none";
+      renderProducts();
+    });
 
-    if (searchClear) {
-      searchClear.addEventListener("click", () => {
-        searchInput.value = "";
-        state.searchQuery = "";
-        searchClear.style.display = "none";
-        renderProducts();
-        searchInput.focus();
-      });
-    }
+    searchClear.addEventListener("click", () => {
+      state.searchQuery = "";
+      searchInput.value = "";
+      searchClear.style.display = "none";
+      renderProducts();
+      searchInput.focus();
+    });
 
-    // Modal Producto
-    if (closeProductModalBtn) {
-      closeProductModalBtn.addEventListener("click", closeProductModal);
-    }
-    if (productModal) {
-      productModal.addEventListener("click", (e) => {
-        if (e.target === productModal) closeProductModal();
-      });
-    }
+    // Abrir Drawer de Carrito
+    floatingCartBtn.addEventListener("click", () => {
+      cartDrawerOverlay.classList.add("active");
+    });
 
-    if (btnDecreaseQty) {
-      btnDecreaseQty.addEventListener("click", () => {
-        if (state.modalQuantity > 1) {
-          state.modalQuantity--;
-          updateModalTotal();
-        }
-      });
-    }
+    closeCartDrawerBtn.addEventListener("click", () => {
+      cartDrawerOverlay.classList.remove("active");
+    });
 
-    if (btnIncreaseQty) {
-      btnIncreaseQty.addEventListener("click", () => {
-        state.modalQuantity++;
-        updateModalTotal();
-      });
-    }
+    cartDrawerOverlay.addEventListener("click", (e) => {
+      if (e.target === cartDrawerOverlay) {
+        cartDrawerOverlay.classList.remove("active");
+      }
+    });
 
-    if (btnAddToCartModal) {
-      btnAddToCartModal.addEventListener("click", () => {
+    clearCartBtn.addEventListener("click", clearCart);
+
+    // Controles dentro del Modal de Detalle
+    closeProductModalBtn.addEventListener("click", closeProductModal);
+    productModal.addEventListener("click", (e) => {
+      if (e.target === productModal) closeProductModal();
+    });
+
+    document.getElementById("modalQtyMinus").addEventListener("click", () => {
+      if (state.modalQuantity > 1) {
+        state.modalQuantity--;
+        document.getElementById("modalQuantityDisplay").textContent = state.modalQuantity;
+        updateModalTotalPrice();
+      }
+    });
+
+    document.getElementById("modalQtyPlus").addEventListener("click", () => {
+      state.modalQuantity++;
+      document.getElementById("modalQuantityDisplay").textContent = state.modalQuantity;
+      updateModalTotalPrice();
+    });
+
+    document.getElementById("btnModalAddToCart").addEventListener("click", () => {
+      if (state.currentModalProduct) {
+        const note = document.getElementById("modalNotes").value.trim();
+        trackAnalytics("click", {
+          action: "modal_add",
+          productId: state.currentModalProduct.id,
+          productName: state.currentModalProduct.name,
+          categoryName: state.currentModalProduct.categoryName,
+          quantity: state.modalQuantity,
+          price: state.currentModalProduct.price,
+          total: parseFloat((state.currentModalProduct.price * state.modalQuantity).toFixed(2))
+        });
+        addToCart(state.currentModalProduct, state.modalQuantity, note);
+        showToast(`¡${state.currentModalProduct.name} agregado al pedido!`);
+        closeProductModal();
+      }
+    });
+
+    // Tracking de enlaces a redes sociales y atención
+    const igEl = document.getElementById("instagramLink");
+    if (igEl) igEl.addEventListener("click", () => trackAnalytics("click", { action: "social_click", target: "Instagram" }));
+    const gEl = document.getElementById("googleLink");
+    if (gEl) gEl.addEventListener("click", () => trackAnalytics("click", { action: "social_click", target: "Google Maps" }));
+    const addrEl = document.getElementById("brandAddressLink");
+    if (addrEl) addrEl.addEventListener("click", () => trackAnalytics("click", { action: "social_click", target: "Google Maps Dirección" }));
+    const waDirectEl = document.getElementById("directWaLink");
+    if (waDirectEl) waDirectEl.addEventListener("click", () => trackAnalytics("click", { action: "social_click", target: "WhatsApp Atención Directa" }));
+
+    // Botones de tipo de servicio (Mesa / Llevar / Delivery)
+    document.querySelectorAll(".service-type-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        handleServiceTypeChange(btn.dataset.type);
+      });
+    });
+
+    // Abrir Lightbox al hacer clic en la foto del producto dentro del modal
+    if (modalImgWrap) {
+      modalImgWrap.addEventListener("click", () => {
         if (state.currentModalProduct) {
-          const notes = modalSpecialNotes.value.trim();
-          addToCart(state.currentModalProduct, state.modalQuantity, notes);
-          closeProductModal();
-        }
-      });
-    }
-
-    if (btnPrevProductImg) {
-      btnPrevProductImg.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (clientModalImages.length > 1) {
-          clientActiveImageIndex = (clientActiveImageIndex - 1 + clientModalImages.length) % clientModalImages.length;
-          renderClientModalGallery();
-        }
-      });
-    }
-
-    if (btnNextProductImg) {
-      btnNextProductImg.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (clientModalImages.length > 1) {
-          clientActiveImageIndex = (clientActiveImageIndex + 1) % clientModalImages.length;
-          renderClientModalGallery();
-        }
-      });
-    }
-
-    if (modalGalleryDots) {
-      modalGalleryDots.addEventListener("click", (e) => {
-        const dot = e.target.closest(".gallery-dot");
-        if (dot && dot.dataset.idx !== undefined) {
-          clientActiveImageIndex = parseInt(dot.dataset.idx, 10);
-          renderClientModalGallery();
+          openImageLightbox(state.currentModalProduct.image, state.currentModalProduct.name);
         }
       });
     }
 
     if (btnZoomModalImg) {
-      btnZoomModalImg.addEventListener("click", () => {
-        if (clientModalImages && clientModalImages[clientActiveImageIndex]) {
-          openLightbox(clientModalImages[clientActiveImageIndex], modalProductTitle.textContent);
-        } else if (state.currentModalProduct) {
-          openLightbox(state.currentModalProduct.image, state.currentModalProduct.name);
+      btnZoomModalImg.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (state.currentModalProduct) {
+          openImageLightbox(state.currentModalProduct.image, state.currentModalProduct.name);
         }
       });
     }
 
-    // Lightbox
+    // Cerrar Lightbox
     if (closeLightboxBtn) {
-      closeLightboxBtn.addEventListener("click", closeLightbox);
+      closeLightboxBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeImageLightbox();
+      });
     }
+
     if (imageLightboxModal) {
       imageLightboxModal.addEventListener("click", (e) => {
-        if (e.target === imageLightboxModal) closeLightbox();
-      });
-    }
-
-    // Carrito Drawer
-    if (floatingCartBtn) {
-      floatingCartBtn.addEventListener("click", () => {
-        cartDrawerOverlay.classList.add("active");
-        document.body.style.overflow = "hidden";
-      });
-    }
-
-    if (closeCartDrawerBtn) {
-      closeCartDrawerBtn.addEventListener("click", () => {
-        cartDrawerOverlay.classList.remove("active");
-        document.body.style.overflow = "";
-      });
-    }
-
-    if (cartDrawerOverlay) {
-      cartDrawerOverlay.addEventListener("click", (e) => {
-        if (e.target === cartDrawerOverlay) {
-          cartDrawerOverlay.classList.remove("active");
-          document.body.style.overflow = "";
+        if (e.target === imageLightboxModal || e.target.classList.contains("lightbox-container") || e.target.classList.contains("lightbox-img-wrapper")) {
+          closeImageLightbox();
         }
       });
     }
 
-    if (clearCartBtn) {
-      clearCartBtn.addEventListener("click", clearCart);
-    }
-
-    if (btnSendWhatsapp) {
-      btnSendWhatsapp.addEventListener("click", sendOrderToWhatsApp);
-    }
-
-    // Selector de Servicios
-    document.querySelectorAll(".btn-service").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".btn-service").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        state.serviceType = btn.dataset.service;
-
-        // Actualizar etiqueta del campo
-        if (locationLabel && locationInput) {
-          if (state.serviceType === "onsite") {
-            locationLabel.textContent = "Número de Mesa o Ubicación *";
-            locationInput.placeholder = "Ej: Mesa 4, Terraza, Galería...";
-          } else if (state.serviceType === "pickup") {
-            locationLabel.textContent = "Detalle para Retirar *";
-            locationInput.placeholder = "Ej: Retiro en barra a las 2:30 PM";
-          } else if (state.serviceType === "delivery") {
-            locationLabel.textContent = "Dirección Exacta y Punto de Referencia *";
-            locationInput.placeholder = "Ej: Urb. El Parral, Edif. A, Apto 4B. Ref: frente a la plaza";
-          }
-        }
-      });
+    // Botón Final de Enviar a WhatsApp
+    btnSendWhatsapp.addEventListener("click", (e) => {
+      e.preventDefault();
+      submitOrderToWhatsApp();
     });
 
-    // Modal de Login / Acceso Administrativo
-    const btnOpenLoginModal = document.getElementById("btnOpenLoginModal");
-    const footerAdminLink = document.getElementById("footerAdminLink");
-    const loginModal = document.getElementById("loginModal");
-    const closeLoginModal = document.getElementById("closeLoginModal");
-    const loginForm = document.getElementById("loginForm");
-    const loginUsername = document.getElementById("loginUsername");
-    const loginPassword = document.getElementById("loginPassword");
-    const btnTogglePassword = document.getElementById("btnTogglePassword");
-    const eyeOpenIcon = document.getElementById("eyeOpenIcon");
-    const eyeClosedIcon = document.getElementById("eyeClosedIcon");
-    const loginErrorMsg = document.getElementById("loginErrorMsg");
-    const loginErrorText = document.getElementById("loginErrorText");
-
-    function openLogin() {
-      // Si ya está autenticado en esta sesión de navegador, entrar directo
-      if (sessionStorage.getItem("bullmarket_admin_logged") === "true") {
-        window.location.href = "admin.html";
-        return;
-      }
-      if (loginModal) {
-        loginModal.classList.add("active");
-        if (loginErrorMsg) loginErrorMsg.style.display = "none";
-        if (loginUsername) {
-          loginUsername.value = "";
-          setTimeout(() => loginUsername.focus(), 100);
-        }
-        if (loginPassword) loginPassword.value = "";
-      }
-    }
-
-    function closeLogin() {
-      if (loginModal) loginModal.classList.remove("active");
-    }
-
-    if (btnOpenLoginModal) {
-      btnOpenLoginModal.addEventListener("click", (e) => {
-        e.preventDefault();
-        openLogin();
-      });
-    }
-
-    if (footerAdminLink) {
-      footerAdminLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        openLogin();
-      });
-    }
-
-    if (closeLoginModal) {
-      closeLoginModal.addEventListener("click", closeLogin);
-    }
-
-    if (loginModal) {
-      loginModal.addEventListener("click", (e) => {
-        if (e.target === loginModal) closeLogin();
-      });
-    }
-
-    // Toggle ver contraseña
-    if (btnTogglePassword && loginPassword) {
-      btnTogglePassword.addEventListener("click", () => {
-        const isPassword = loginPassword.type === "password";
-        loginPassword.type = isPassword ? "text" : "password";
-        if (eyeOpenIcon) eyeOpenIcon.style.display = isPassword ? "none" : "block";
-        if (eyeClosedIcon) eyeClosedIcon.style.display = isPassword ? "block" : "none";
-      });
-    }
-
-    // Procesar autenticación
-    if (loginForm) {
-      loginForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const user = loginUsername.value.trim().toLowerCase();
-        const pass = loginPassword.value.trim();
-
-        // Obtener credenciales válidas
-        const auth = (state.config && state.config.adminAuth) ? state.config.adminAuth : { username: "admin", password: "bullmarket2026" };
-        const validUser1 = (auth.username || "admin").toLowerCase();
-        const validUser2 = "bullmarket"; // alias de conveniencia
-        const validPass = auth.password || "bullmarket2026";
-
-        if ((user === validUser1 || user === validUser2) && pass === validPass) {
-          // Autenticado con éxito
-          sessionStorage.setItem("bullmarket_admin_logged", "true");
-          sessionStorage.setItem("bullmarket_admin_user", user);
-          showToast("¡Acceso autorizado! Redirigiendo al panel...");
-          setTimeout(() => {
-            window.location.href = "admin.html";
-          }, 400);
-        } else {
-          // Error de credenciales
-          if (loginErrorMsg) {
-            loginErrorMsg.style.display = "flex";
-            if (loginErrorText) loginErrorText.textContent = "Usuario o contraseña incorrectos. Verifica e intenta de nuevo.";
-          }
-          if (loginPassword) {
-            loginPassword.value = "";
-            loginPassword.focus();
-          }
-        }
-      });
-    }
-
-    // Tecla Escape para modales
+    // Cerrar modales con tecla Escape (priorizando lightbox si está activo)
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        if (loginModal && loginModal.classList.contains("active")) {
-          closeLogin();
-        } else if (imageLightboxModal && imageLightboxModal.classList.contains("active")) {
-          closeLightbox();
-        } else if (productModal && productModal.classList.contains("active")) {
-          closeProductModal();
-        } else if (cartDrawerOverlay && cartDrawerOverlay.classList.contains("active")) {
-          cartDrawerOverlay.classList.remove("active");
-          document.body.style.overflow = "";
+        if (imageLightboxModal && imageLightboxModal.classList.contains("active")) {
+          closeImageLightbox();
+          return;
         }
+        closeProductModal();
+        cartDrawerOverlay.classList.remove("active");
       }
     });
-  }
-
-  // Utilidad de escape HTML
-  function escapeHtml(str) {
-    if (!str) return "";
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
   }
 });
